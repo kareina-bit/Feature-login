@@ -33,7 +33,19 @@ export function initAuth() {
       
       const phone = document.getElementById("loginPhone").value;
       const password = document.getElementById("loginPassword").value;
-      
+      // Custom validation (replace browser native messages)
+      if (!phone || !phone.trim()) {
+        showMessage(messageEl, "Vui lòng nhập số điện thoại", "error");
+        document.getElementById("loginPhone").focus();
+        return;
+      }
+
+      if (!password || !password.trim()) {
+        showMessage(messageEl, "Vui lòng nhập mật khẩu", "error");
+        document.getElementById("loginPassword").focus();
+        return;
+      }
+
       try {
         loginUser(phone, password);
         showMessage(messageEl, "Đăng nhập thành công", "success");

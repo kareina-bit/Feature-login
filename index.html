@@ -23,7 +23,7 @@
     <div class="card" id="loginView">
         <h2>Đăng nhập </h2>
 
-        <form id="loginForm">
+        <form id="loginForm" novalidate>
             <div class="input-group phone-group">
                 <select id="loginCountry" class="country-select">
                     <option value="+84">🇻🇳 +84</option>
@@ -51,7 +51,6 @@
             Chưa có tài khoản? Đăng ký
         </a>
     </div>
-
     <!-- ===== REGISTER VIEW ===== -->
     <div class="card hidden" id="registerView">
         <h2>Đăng ký tài khoản</h2>
@@ -115,7 +114,7 @@
     <div class="card hidden" id="resetView">
         <h2>Đặt lại mật khẩu</h2>
 
-        <form id="resetForm">
+        <form id="resetForm" novalidate>
             <!-- Step 1: Phone -->
             <div id="resetPhoneStep">
                 <div class="input-group phone-group">
