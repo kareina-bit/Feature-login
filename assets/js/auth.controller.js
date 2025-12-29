@@ -242,7 +242,7 @@ export function initAuth() {
       } catch (err) {
         showMessage(messageEl, err, "error");
       }
-    }
+    });
     
     function handleResetStep3() {
       const messageEl = document.getElementById("resetPasswordMessage");
