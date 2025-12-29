@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập Shipway</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+
+<body>
+    <div class="page">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="logo">Shipway</h1>
+            <p class="desc">
+                Đăng nhập tài khoản Shipway<br>
+                để sử dụng các dịch vụ vận chuyển
+            </p>
+        </div>
+
+        <!-- Login card -->
+        <div class="card">
+            <h2>Đăng nhập bằng số điện thoại</h2>
+
+            <form id="loginForm">
+                <div class="input-group phone-group">
+    <select id="loginCountry" class="country-select">
+        <option value="+84">🇻🇳 +84</option>
+        <option value="+1">🇺🇸 +1</option>
+        <option value="+82">🇰🇷 +82</option>
+        <option value="+81">🇯🇵 +81</option>
+    </select>
+
+    <input id="loginPhone" type="tel" placeholder="Số điện thoại" required>
+</div>
+
+                <div class="input-group">
+                    <input id="loginPassword" type="password" placeholder="Mật khẩu" required>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    Đăng nhập
+                </button>
+            </form>
+
+            <a href="#" id="forgotLink" class="link">Quên mật khẩu</a>
+
+            <div class="divider"></div>
+
+            <a href="register.html" class="link strong">
+                Chưa có tài khoản? Đăng ký
+            </a>
+        </div>
+    </div>
+
+    <script src="assets/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký Shipway</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+
+<body>
+    <div class="page">
+        <div class="header">
+            <h1 class="logo">Shipway</h1>
+            <p class="desc">Tạo tài khoản mới để sử dụng hệ thống</p>
+        </div>
+
+        <div class="card">
+            <h2>Đăng ký tài khoản</h2>
+
+            <form id="registerForm">
+                <!-- Số điện thoại + quốc gia -->
+                <div class="input-group phone-group">
+                    <select class="country-select">
+                        <option value="+84">🇻🇳 +84</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+82">🇰🇷 +82</option>
+                        <option value="+81">🇯🇵 +81</option>
+                    </select>
+
+                    <input id="regPhone" type="tel" placeholder="Số điện thoại" required>
+                </div>
+
+                <!-- Họ tên -->
+                <div class="input-group">
+                    <input id="fullName" type="text" placeholder="Họ và tên" required>
+                </div>
+
+                <!-- Mật khẩu -->
+                <div class="input-group">
+                    <input id="regPassword" type="password" placeholder="Mật khẩu" required>
+                </div>
+
+                <div id="otpSection" style="display:none; margin-bottom:12px;">
+                    <p style="font-size:14px; color:#444; margin-bottom:8px;">Nhập mã OTP đã gửi tới số điện thoại</p>
+                    <div class="input-group">
+                        <input id="regOtpInput" type="text" placeholder="Mã OTP" />
+                    </div>
+                    <button id="verifyOtpBtn" class="btn-primary" type="button">Xác thực OTP</button>
+                    <button id="resendOtpBtn" class="btn-primary" type="button" style="background:#fff;color:#0068ff;border:1px solid #d0e9ff;margin-top:8px">Gửi lại mã</button>
+                </div>
+
+                <button id="registerBtn" class="btn-primary" type="submit">
+                    Đăng ký
+                </button>
+            </form>
+
+            <a href="login.html" class="link strong">
+                Quay lại đăng nhập
+            </a>
+        </div>
+    </div>
+    <script src="assets/auth.js"></script>
+</body>
+</html>
