@@ -47,6 +47,13 @@ body::before {
     font-weight: 700;
 }
 
+.logo-img {
+    max-width: 200px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
 .desc {
     margin-top: 8px;
     color: #444;
