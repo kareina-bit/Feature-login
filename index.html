@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipway Auth</title>
+    <link rel="stylesheet" href="assets/css/auth.css">
+</head>
+
+<body>
+<div class="page">
+
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <img src="img/Dcm.png" alt="Shipway" class="logo-img">
+        <p class="desc" id="headerDesc">
+            Đăng nhập tài khoản Shipway<br>
+            để sử dụng các dịch vụ vận chuyển
+        </p>
+    </div>
+
+    <!-- ===== LOGIN VIEW ===== -->
+    <div class="card" id="loginView">
+        <h2>Đăng nhập </h2>
+
+        <form id="loginForm" novalidate>
+            <div class="input-group phone-group">
+                <select id="loginCountry" class="country-select">
+                    <option value="+84">🇻🇳 +84</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+82">🇰🇷 +82</option>
+                    <option value="+81">🇯🇵 +81</option>
+                </select>
+                <input id="loginPhone" type="tel" placeholder="Số điện thoại" required>
+            </div>
+
+            <div class="input-group">
+                <input id="loginPassword" type="password" placeholder="Mật khẩu" required>
+            </div>
+
+            <button type="submit" class="btn-primary">Đăng nhập</button>
+            
+            <div id="loginMessage" class="form-message"></div>
+        </form>
+
+        <a href="#" id="forgotLink" class="link">Quên mật khẩu</a>
+
+        <div class="divider"></div>
+
+        <a href="#" class="link strong" onclick="showRegister()">
+            Chưa có tài khoản? Đăng ký
+        </a>
+    </div>
+    <!-- ===== REGISTER VIEW ===== -->
+    <div class="card hidden" id="registerView">
+        <h2>Đăng ký tài khoản</h2>
+
+        <form id="registerForm">
+            <div class="input-group phone-group">
+                <select id="regCountry" class="country-select">
+                    <option value="+84">🇻🇳 +84</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+82">🇰🇷 +82</option>
+                    <option value="+81">🇯🇵 +81</option>
+                </select>
+                <input id="regPhone" type="tel" placeholder="Số điện thoại" required>
+            </div>
+
+            <div id="regPhoneMessage" class="form-message"></div>
+
+            <!-- Send OTP Button -->
+            <button type="button" class="btn-primary" id="sendOtpBtn">
+                Gửi mã OTP
+            </button>
+
+            <!-- OTP Input Section -->
+            <div id="otpSection">
+                <p class="otp-desc">Nhập mã OTP đã gửi tới số điện thoại</p>
+                <div class="input-group">
+                    <input id="regOtpInput" type="text" placeholder="Mã OTP">
+                </div>
+                <div id="otpMessage" class="form-message"></div>
+            </div>
+
+            <!-- Name & Password -->
+            <div id="regDetailsSection">
+                <div class="input-group">
+                    <input id="fullName" type="text" placeholder="Họ và tên" required>
+                </div>
+
+                <div class="input-group">
+                    <input id="regPassword" type="password" placeholder="Mật khẩu" required>
+                </div>
+                <div class="input-group birthdate-group">
+                    <input id="regBirthDay" type="number" placeholder="Ngày" min="1" max="31">
+                    <input id="regBirthMonth" type="number" placeholder="Tháng" min="1" max="12">
+                    <input id="regBirthYear" type="number" placeholder="Năm" min="1900" max="2025">
+                </div>
+            </div>
+
+            <button id="registerBtn" type="submit" class="btn-primary">
+                Đăng ký
+            </button>
+
+            <div id="registerMessage" class="form-message"></div>
+        </form>
+
+        <a href="#" class="link strong" onclick="showLogin()">
+            Quay lại đăng nhập
+        </a>
+    </div>
+
+    <!-- ===== RESET PASSWORD VIEW ===== -->
+    <div class="card hidden" id="resetView">
+        <h2>Đặt lại mật khẩu</h2>
+
+        <form id="resetForm" novalidate>
+            <!-- Step 1: Phone -->
+            <div id="resetPhoneStep">
+                <div class="input-group phone-group">
+                    <select id="resetCountry" class="country-select">
+                        <option value="+84">🇻🇳 +84</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+82">🇰🇷 +82</option>
+                        <option value="+81">🇯🇵 +81</option>
+                    </select>
+                    <input id="resetPhone" type="tel" placeholder="Số điện thoại" required>
+                </div>
+                <div id="resetPhoneMessage" class="form-message"></div>
+            </div>
+
+            <!-- Step 2: OTP -->
+            <div id="resetOtpStep" class="hidden">
+                <div class="input-group">
+                    <input id="resetOtpInput" type="text" placeholder="Mã OTP" required>
+                </div>
+                <div id="resetOtpMessage" class="form-message"></div>
+            </div>
+
+            <!-- Step 3: New Password -->
+            <div id="resetPasswordStep" class="hidden">
+                <div class="input-group">
+                    <input id="resetNewPassword" type="password" placeholder="Mật khẩu mới" required>
+                </div>
+                <div id="resetPasswordMessage" class="form-message"></div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="resetBtn">Gửi mã OTP</button>
+        </form>
+
+        <a href="#" class="link strong" id="resetBackLink">
+            Quay lại đăng nhập
+        </a>
+    </div>
+
+</div>
+
+<script type="module" src="assets/js/auth.controller.js"></script>
+
+
+<script>
+    function showRegister() {
+        // Hide reset view if visible and reset its fields
+        const resetV = document.getElementById('resetView');
+        if (resetV) {
+            resetV.classList.add('hidden');
+            const resetPhone = document.getElementById('resetPhone');
+            const resetOtp = document.getElementById('resetOtpInput');
+            const resetNew = document.getElementById('resetNewPassword');
+            if (resetPhone) resetPhone.value = '';
+            if (resetOtp) resetOtp.value = '';
+            if (resetNew) resetNew.value = '';
+        }
+
+        document.getElementById('loginView').classList.add('hidden');
+        document.getElementById('registerView').classList.remove('hidden');
+        document.getElementById('headerDesc').innerText =
+            'Tạo tài khoản mới để sử dụng hệ thống';
+    }
+
+    function showLogin() {
+        // Reset register form state
+        const regPhone = document.getElementById('regPhone');
+        const regOtpInput = document.getElementById('regOtpInput');
+        const sendOtpBtn = document.getElementById('sendOtpBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        
+        document.getElementById('registerForm').reset();
+        regPhone.disabled = false;
+        regOtpInput.disabled = false;
+        sendOtpBtn.style.display = 'none';
+        registerBtn.style.display = 'none';
+        
+        document.getElementById('otpSection').classList.add('hidden');
+        document.getElementById('regDetailsSection').classList.add('hidden');
+        
+        // Clear messages
+        document.getElementById('regPhoneMessage').textContent = '';
+        document.getElementById('otpMessage').textContent = '';
+        document.getElementById('registerMessage').textContent = '';
+        
+        // Show login view
+        const registerView = document.getElementById('registerView');
+        const loginView = document.getElementById('loginView');
+        if (registerView) registerView.classList.add('hidden');
+        if (loginView) loginView.classList.remove('hidden');
+        document.getElementById('headerDesc').innerHTML =
+            'Đăng nhập tài khoản Shipway<br>để sử dụng các dịch vụ vận chuyển';
+
+        // Also hide and reset reset-password view if visible
+        const resetView = document.getElementById('resetView');
+        if (resetView) {
+            resetView.classList.add('hidden');
+            const resetPhone = document.getElementById('resetPhone');
+            const resetOtp = document.getElementById('resetOtpInput');
+            const resetNew = document.getElementById('resetNewPassword');
+            if (resetPhone) resetPhone.value = '';
+            if (resetOtp) resetOtp.value = '';
+            if (resetNew) resetNew.value = '';
+            const resetPhoneStep = document.getElementById('resetPhoneStep');
+            const resetOtpStep = document.getElementById('resetOtpStep');
+            const resetPasswordStep = document.getElementById('resetPasswordStep');
+            if (resetPhoneStep) resetPhoneStep.classList.remove('hidden');
+            if (resetOtpStep) resetOtpStep.classList.add('hidden');
+            if (resetPasswordStep) resetPasswordStep.classList.add('hidden');
+            const resetPhoneMsg = document.getElementById('resetPhoneMessage');
+            const resetOtpMsg = document.getElementById('resetOtpMessage');
+            const resetPasswordMsg = document.getElementById('resetPasswordMessage');
+            if (resetPhoneMsg) resetPhoneMsg.textContent = '';
+            if (resetOtpMsg) resetOtpMsg.textContent = '';
+            if (resetPasswordMsg) resetPasswordMsg.textContent = '';
+            const resetBtn = document.getElementById('resetBtn'); if (resetBtn) resetBtn.textContent = 'Gửi mã OTP';
+        }
+    }
+</script>
+</body>
+</html>
