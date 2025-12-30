@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Shipway</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <style>
+        .dashboard-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+        .dashboard-header {
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .dashboard-header h1 {
+            color: #0068ff;
+            margin-bottom: 8px;
+        }
+        .user-info {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        .user-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .user-info-item:last-child {
+            border-bottom: none;
+        }
+        .user-info-label {
+            color: #666;
+            font-weight: 500;
+        }
+        .user-info-value {
+            color: #333;
+        }
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 16px;
+        }
+        .logout-btn:hover {
+            background: #ff5252;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-verified {
+            background: #cce5ff;
+            color: #004085;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>🚚 Dashboard Shipway</h1>
+            <p style="color: #666;">Chào mừng bạn đến với hệ thống quản lý tài xế</p>
+            
+            <div class="user-info" id="userInfo">
+                <h3 style="margin-bottom: 12px; color: #333;">Thông tin tài khoản</h3>
+                <div id="userDetails">
+                    <p style="text-align: center; color: #999;">Đang tải...</p>
+                </div>
+            </div>
+
+            <button class="logout-btn" id="logoutBtn">
+                Đăng xuất
+            </button>
+        </div>
+
+        <div style="background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+            <h3 style="color: #333; margin-bottom: 16px;">📊 Chức năng</h3>
+            <p style="color: #666; margin-bottom: 12px;">Các chức năng sau sẽ được phát triển trong EPIC 2:</p>
+            <ul style="color: #666; line-height: 1.8; padding-left: 20px;">
+                <li>Cập nhật thông tin cá nhân</li>
+                <li>Đổi mật khẩu</li>
+                <li>Upload avatar</li>
+                <li>Quản lý phương tiện</li>
+                <li>Xem lịch sử đơn hàng</li>
+                <li>Thống kê thu nhập</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toastContainer"></div>
+
+    <!-- API Configuration -->
+    <script src="assets/api-config.js"></script>
+    
+    <script>
+        // Toast helper
+        function showToast(message, type = "info", timeout = 3000) {
+            const toast = document.createElement("div");
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add("visible"), 10);
+            setTimeout(() => {
+                toast.classList.remove("visible");
+                setTimeout(() => toast.remove(), 300);
+            }, timeout);
+        }
+
+        // Check authentication
+        if (!TokenManager.isAuthenticated()) {
+            showToast("Vui lòng đăng nhập để tiếp tục", "error");
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 1000);
+        }
+
+        // Load user profile
+        async function loadProfile() {
+            const accessToken = TokenManager.getAccessToken();
+            const userDetails = document.getElementById('userDetails');
+
+            try {
+                const response = await API.getProfile(accessToken);
+                const user = response.data.user;
+
+                // Update user info display
+                userDetails.innerHTML = `
+                    <div class="user-info-item">
+                        <span class="user-info-label">ID:</span>
+                        <span class="user-info-value">${user.id}</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Họ tên:</span>
+                        <span class="user-info-value">${user.fullName || 'Chưa cập nhật'}</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Số điện thoại:</span>
+                        <span class="user-info-value">${user.phoneNumber}</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Email:</span>
+                        <span class="user-info-value">${user.email || 'Chưa cập nhật'}</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Vai trò:</span>
+                        <span class="user-info-value">${user.role === 'driver' ? 'Tài xế' : 'Quản trị viên'}</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Trạng thái:</span>
+                        <span class="user-info-value">
+                            <span class="status-badge status-active">${user.status === 'active' ? 'Hoạt động' : user.status}</span>
+                        </span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Xác thực SĐT:</span>
+                        <span class="user-info-value">
+                            ${user.phoneNumberVerified ? '<span class="status-badge status-verified">✓ Đã xác thực</span>' : '❌ Chưa xác thực'}
+                        </span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Đăng nhập lần cuối:</span>
+                        <span class="user-info-value">${user.lastLogin ? new Date(user.lastLogin).toLocaleString('vi-VN') : 'N/A'}</span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Ngày tạo:</span>
+                        <span class="user-info-value">${new Date(user.createdAt).toLocaleDateString('vi-VN')}</span>
+                    </div>
+                `;
+
+                // Store user data
+                UserManager.setUser(user);
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                userDetails.innerHTML = `
+                    <p style="text-align: center; color: #ff6b6b;">
+                        Không thể tải thông tin. ${error.message}
+                    </p>
+                `;
+                
+                // If token is invalid, redirect to login
+                if (error.message.includes('token') || error.message.includes('401')) {
+                    showToast("Phiên đăng nhập đã hết hạn", "error");
+                    setTimeout(() => {
+                        UserManager.logout();
+                        window.location.href = "login.html";
+                    }, 2000);
+                }
+            }
+        }
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                UserManager.logout();
+                showToast("Đã đăng xuất thành công", "success");
+                setTimeout(() => {
+                    window.location.href = "login.html";
+                }, 1000);
+            }
+        });
+
+        // Load profile on page load
+        loadProfile();
+    </script>
+</body>
+</html>
+
