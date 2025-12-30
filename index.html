@@ -105,46 +105,55 @@
         </a>
     </div>
 
-    <!-- ===== RESET PASSWORD VIEW ===== -->
+    <!-- ===== RESET PASSWORD VIEW: STEP 1 (PHONE) ===== -->
     <div class="card hidden" id="resetView">
         <h2>Đặt lại mật khẩu</h2>
 
         <form id="resetForm" novalidate>
-            <!-- Step 1: Phone -->
-            <div id="resetPhoneStep">
-                <div class="input-group phone-group">
-                    <select id="resetCountry" class="country-select">
-                        <option value="+84">🇻🇳 +84</option>
-                        <option value="+1">🇺🇸 +1</option>
-                        <option value="+82">🇰🇷 +82</option>
-                        <option value="+81">🇯🇵 +81</option>
-                    </select>
-                    <input id="resetPhone" type="tel" placeholder="Số điện thoại" required>
-                </div>
-                <div id="resetPhoneMessage" class="form-message"></div>
+            <div class="input-group phone-group">
+                <select id="resetCountry" class="country-select">
+                    <option value="+84">🇻🇳 +84</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+82">🇰🇷 +82</option>
+                    <option value="+81">🇯🇵 +81</option>
+                </select>
+                <input id="resetPhone" type="tel" placeholder="Số điện thoại" required>
             </div>
-
-            <!-- Step 2: OTP -->
-            <div id="resetOtpStep" class="hidden">
-                <div class="input-group">
-                    <input id="resetOtpInput" type="text" placeholder="Mã OTP" required>
-                </div>
-                <div id="resetOtpMessage" class="form-message"></div>
-            </div>
-
-            <!-- Step 3: New Password -->
-            <div id="resetPasswordStep" class="hidden">
-                <div class="input-group">
-                    <input id="resetNewPassword" type="password" placeholder="Mật khẩu mới" required>
-                </div>
-                <div id="resetPasswordMessage" class="form-message"></div>
-            </div>
-
+            <div id="resetPhoneMessage" class="form-message"></div>
             <button type="submit" class="btn-primary" id="resetBtn">Gửi mã OTP</button>
         </form>
 
         <a href="#" class="link strong" id="resetBackLink">
             Quay lại đăng nhập
+        </a>
+    </div>
+
+    <!-- ===== RESET PASSWORD VIEW: STEP 2 (OTP + NEW PASSWORD) ===== -->
+    <div class="card hidden" id="resetOtpView">
+        <h2>Nhập OTP và mật khẩu mới</h2>
+
+        <form id="resetOtpForm" novalidate>
+            <p class="otp-desc">Nhập mã OTP đã gửi tới số điện thoại</p>
+
+            <div class="input-group">
+                <input id="resetOtpInput" type="text" placeholder="Mã OTP" required>
+            </div>
+
+            <div class="input-group">
+                <input id="resetNewPassword" type="password" placeholder="Mật khẩu mới" required>
+            </div>
+
+            <div class="input-group">
+                <input id="resetConfirmPassword" type="password" placeholder="Xác nhận mật khẩu mới" required>
+            </div>
+
+            <div id="resetOtpMessage" class="form-message"></div>
+
+            <button type="submit" class="btn-primary" id="resetConfirmBtn">Đặt lại mật khẩu</button>
+        </form>
+
+        <a href="#" class="link strong" id="resetOtpBackLink">
+            Quay lại nhập số điện thoại
         </a>
     </div>
 
@@ -216,30 +225,25 @@
         document.getElementById('headerDesc').innerHTML =
             'Đăng nhập tài khoản Shipway<br>để sử dụng các dịch vụ vận chuyển';
 
-        // Also hide and reset reset-password view if visible
+        // Hide and reset reset-password views if visible
         const resetView = document.getElementById('resetView');
-        if (resetView) {
-            resetView.classList.add('hidden');
-            const resetPhone = document.getElementById('resetPhone');
-            const resetOtp = document.getElementById('resetOtpInput');
-            const resetNew = document.getElementById('resetNewPassword');
-            if (resetPhone) resetPhone.value = '';
-            if (resetOtp) resetOtp.value = '';
-            if (resetNew) resetNew.value = '';
-            const resetPhoneStep = document.getElementById('resetPhoneStep');
-            const resetOtpStep = document.getElementById('resetOtpStep');
-            const resetPasswordStep = document.getElementById('resetPasswordStep');
-            if (resetPhoneStep) resetPhoneStep.classList.remove('hidden');
-            if (resetOtpStep) resetOtpStep.classList.add('hidden');
-            if (resetPasswordStep) resetPasswordStep.classList.add('hidden');
-            const resetPhoneMsg = document.getElementById('resetPhoneMessage');
-            const resetOtpMsg = document.getElementById('resetOtpMessage');
-            const resetPasswordMsg = document.getElementById('resetPasswordMessage');
-            if (resetPhoneMsg) resetPhoneMsg.textContent = '';
-            if (resetOtpMsg) resetOtpMsg.textContent = '';
-            if (resetPasswordMsg) resetPasswordMsg.textContent = '';
-            const resetBtn = document.getElementById('resetBtn'); if (resetBtn) resetBtn.textContent = 'Gửi mã OTP';
-        }
+        const resetOtpView = document.getElementById('resetOtpView');
+        if (resetView) resetView.classList.add('hidden');
+        if (resetOtpView) resetOtpView.classList.add('hidden');
+
+        const resetPhone = document.getElementById('resetPhone');
+        const resetOtp = document.getElementById('resetOtpInput');
+        const resetNew = document.getElementById('resetNewPassword');
+        const resetConfirm = document.getElementById('resetConfirmPassword');
+        if (resetPhone) resetPhone.value = '';
+        if (resetOtp) resetOtp.value = '';
+        if (resetNew) resetNew.value = '';
+        if (resetConfirm) resetConfirm.value = '';
+
+        const resetPhoneMsg = document.getElementById('resetPhoneMessage');
+        const resetOtpMsg = document.getElementById('resetOtpMessage');
+        if (resetPhoneMsg) resetPhoneMsg.textContent = '';
+        if (resetOtpMsg) resetOtpMsg.textContent = '';
     }
 </script>
 </body>
