@@ -197,6 +197,7 @@ input {
     display: none;
 }
 
+
 /* Inline form messages (errors / success / info) */
 .form-message {
     margin-top: 8px;

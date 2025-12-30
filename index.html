@@ -55,7 +55,7 @@
     <div class="card hidden" id="registerView">
         <h2>Đăng ký tài khoản</h2>
 
-        <form id="registerForm">
+        <form id="registerForm" novalidate>
             <div class="input-group phone-group">
                 <select id="regCountry" class="country-select">
                     <option value="+84">🇻🇳 +84</option>
@@ -90,11 +90,6 @@
 
                 <div class="input-group">
                     <input id="regPassword" type="password" placeholder="Mật khẩu" required>
-                </div>
-                <div class="input-group birthdate-group">
-                    <input id="regBirthDay" type="number" placeholder="Ngày" min="1" max="31">
-                    <input id="regBirthMonth" type="number" placeholder="Tháng" min="1" max="12">
-                    <input id="regBirthYear" type="number" placeholder="Năm" min="1900" max="2025">
                 </div>
             </div>
 
@@ -160,23 +155,37 @@
 
 <script>
     function showRegister() {
-        // Hide reset view if visible and reset its fields
-        const resetV = document.getElementById('resetView');
-        if (resetV) {
-            resetV.classList.add('hidden');
-            const resetPhone = document.getElementById('resetPhone');
-            const resetOtp = document.getElementById('resetOtpInput');
-            const resetNew = document.getElementById('resetNewPassword');
-            if (resetPhone) resetPhone.value = '';
-            if (resetOtp) resetOtp.value = '';
-            if (resetNew) resetNew.value = '';
-        }
+    // Hide other views
+    document.getElementById('loginView').classList.add('hidden');
+    document.getElementById('resetView').classList.add('hidden');
 
-        document.getElementById('loginView').classList.add('hidden');
-        document.getElementById('registerView').classList.remove('hidden');
-        document.getElementById('headerDesc').innerText =
-            'Tạo tài khoản mới để sử dụng hệ thống';
-    }
+    // Show register view
+    document.getElementById('registerView').classList.remove('hidden');
+
+    // Reset form
+    const form = document.getElementById('registerForm');
+    form.reset();
+
+    // RESET STATE REGISTER
+    document.getElementById('regPhone').disabled = false;
+    document.getElementById('regOtpInput').disabled = false;
+
+    // SHOW ĐÚNG CÁC SECTION
+    document.getElementById('sendOtpBtn').style.display = 'block';
+    document.getElementById('registerBtn').style.display = 'block';
+
+    document.getElementById('otpSection').classList.remove('hidden');
+    document.getElementById('regDetailsSection').classList.remove('hidden');
+
+    // Clear messages
+    document.getElementById('regPhoneMessage').textContent = '';
+    document.getElementById('otpMessage').textContent = '';
+    document.getElementById('registerMessage').textContent = '';
+
+    // Header
+    document.getElementById('headerDesc').innerText =
+        'Tạo tài khoản mới để sử dụng hệ thống';
+}
 
     function showLogin() {
         // Reset register form state
