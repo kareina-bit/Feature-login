@@ -19,6 +19,17 @@
         </p>
     </div>
 
+    <!-- ===== OTP NOTIFICATION ===== -->
+    <div id="otpNotification" class="otp-notification hidden">
+        <div class="otp-notification-content">
+            <h3>📱 Mã OTP đã được gửi</h3>
+            <p>Số điện thoại: <strong id="otpPhoneDisplay"></strong></p>
+            <p>Mã OTP: <strong id="otpCodeDisplay" class="otp-code"></strong></p>
+            <p class="otp-note">(Mã này chỉ hiển thị để test, kiểm tra Console để xem chi tiết)</p>
+            <button onclick="closeOtpNotification()" class="btn-primary">Đã ghi nhận</button>
+        </div>
+    </div>
+
     <!-- ===== LOGIN VIEW ===== -->
     <div class="card" id="loginView">
         <h2>Đăng nhập </h2>
@@ -163,6 +174,26 @@
 
 
 <script>
+    // Hiển thị thông báo OTP trên giao diện
+    window.showOtpNotification = function(phone, otp) {
+        const notification = document.getElementById('otpNotification');
+        const phoneDisplay = document.getElementById('otpPhoneDisplay');
+        const codeDisplay = document.getElementById('otpCodeDisplay');
+        
+        if (notification && phoneDisplay && codeDisplay) {
+            phoneDisplay.textContent = phone;
+            codeDisplay.textContent = otp;
+            notification.classList.remove('hidden');
+        }
+    };
+
+    function closeOtpNotification() {
+        const notification = document.getElementById('otpNotification');
+        if (notification) {
+            notification.classList.add('hidden');
+        }
+    }
+
     function showRegister() {
     // Hide other views
     document.getElementById('loginView').classList.add('hidden');
