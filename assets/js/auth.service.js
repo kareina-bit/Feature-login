@@ -22,7 +22,20 @@ export function sendOtp(phone, opts = {}) {
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   saveOtp(phone, otp);
-  console.log(`OTP for ${phone}: ${otp}`);
+  
+  // Hiển thị OTP rõ ràng trong console
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log("📱 MÃ OTP ĐÃ ĐƯỢC GỬI");
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log(`   Số điện thoại: ${phone}`);
+  console.log(`   🔐 Mã OTP: ${otp}`);
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  
+  // Hiển thị thông báo trên màn hình (tùy chọn)
+  if (typeof window !== 'undefined' && window.showOtpNotification) {
+    window.showOtpNotification(phone, otp);
+  }
+  
   return true;
 }
 

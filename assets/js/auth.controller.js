@@ -118,73 +118,80 @@ function initRegister() {
   });
 }
 
-/* ================= RESET PASSWORD ================= */
+/* ================= RESET PASSWORD (TWO VIEWS) ================= */
 
 function initResetPassword() {
-  const form = document.getElementById("resetForm");
-  if (!form) return;
+  const phoneForm = document.getElementById("resetForm");
+  const otpForm = document.getElementById("resetOtpForm");
+  if (!phoneForm && !otpForm) return;
 
-  const phone = document.getElementById("resetPhone");
-  const otp = document.getElementById("resetOtpInput");
-  const password = document.getElementById("resetNewPassword");
-  const btn = document.getElementById("resetBtn");
+  const phoneInput = document.getElementById("resetPhone");
+  const phoneMsg = document.getElementById("resetPhoneMessage");
+  const otpInput = document.getElementById("resetOtpInput");
+  const newPassword = document.getElementById("resetNewPassword");
+  const confirmPassword = document.getElementById("resetConfirmPassword");
+  const otpMsg = document.getElementById("resetOtpMessage");
 
-  let step = 1;
   let phoneValue = "";
-  let otpValue = "";
 
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    form.classList.add("submitted");
+  if (phoneForm) {
+    phoneForm.addEventListener("submit", e => {
+      e.preventDefault();
+      phoneForm.classList.add("submitted");
+      clearMessage(phoneMsg);
 
-    if (step === 1) {
-      if (!phone.value.trim()) return error("resetPhoneMessage", "Nhập số điện thoại");
-      try {
-        sendOtp(phone.value.trim(), { requireUser: true });
-        phoneValue = phone.value.trim();
-        switchStep(2);
-      } catch (err) {
-        error("resetPhoneMessage", err);
+      if (!phoneInput.value.trim()) {
+        showMessage(phoneMsg, "Nhập số điện thoại", "error");
+        phoneInput.focus();
+        return;
       }
-    }
 
-    else if (step === 2) {
-      if (!otp.value.trim()) return error("resetOtpMessage", "Nhập mã OTP");
       try {
-        verifyOtp(phoneValue, otp.value.trim());
-        otpValue = otp.value.trim();
-        switchStep(3);
+        sendOtp(phoneInput.value.trim(), { requireUser: true });
+        phoneValue = phoneInput.value.trim();
+        showMessage(phoneMsg, "Đã gửi mã OTP. Vui lòng kiểm tra tin nhắn.", "success");
+        showResetOtpView();
       } catch (err) {
-        error("resetOtpMessage", err);
+        showMessage(phoneMsg, err, "error");
       }
-    }
+    });
+  }
 
-    else {
-      if (!password.value.trim()) return error("resetPasswordMessage", "Nhập mật khẩu mới");
+  if (otpForm) {
+    otpForm.addEventListener("submit", e => {
+      e.preventDefault();
+      otpForm.classList.add("submitted");
+      clearMessage(otpMsg);
+
+      if (!phoneValue) {
+        showMessage(otpMsg, "Vui lòng nhập số điện thoại trước", "error");
+        showResetView();
+        return;
+      }
+
+      if (!otpInput.value.trim() || !newPassword.value.trim() || !confirmPassword.value.trim()) {
+        showMessage(otpMsg, "Vui lòng nhập đầy đủ thông tin", "error");
+        return;
+      }
+
+      if (newPassword.value.trim() !== confirmPassword.value.trim()) {
+        showMessage(otpMsg, "Mật khẩu xác nhận không khớp", "error");
+        return;
+      }
+
       try {
-        resetPassword(phoneValue, otpValue, password.value.trim());
-        showMessage(document.getElementById("resetPasswordMessage"), "Đặt lại mật khẩu thành công", "success");
+        verifyOtp(phoneValue, otpInput.value.trim());
+        resetPassword(phoneValue, otpInput.value.trim(), newPassword.value.trim());
+        showMessage(otpMsg, "Đặt lại mật khẩu thành công", "success");
         setTimeout(() => {
           if (typeof window.showLogin === "function") {
             window.showLogin();
           }
         }, 1500);
       } catch (err) {
-        error("resetPasswordMessage", err);
+        showMessage(otpMsg, err, "error");
       }
-    }
-  });
-
-  function switchStep(n) {
-    step = n;
-    document.getElementById("resetPhoneStep").classList.toggle("hidden", n !== 1);
-    document.getElementById("resetOtpStep").classList.toggle("hidden", n !== 2);
-    document.getElementById("resetPasswordStep").classList.toggle("hidden", n !== 3);
-    btn.textContent = n === 3 ? "Đặt lại mật khẩu" : "Tiếp tục";
-    
-    // Clear messages when switching steps
-    if (n === 2) clearMessage(document.getElementById("resetPhoneMessage"));
-    if (n === 3) clearMessage(document.getElementById("resetOtpMessage"));
+    });
   }
 }
 
@@ -193,6 +200,7 @@ function initResetPassword() {
 function initResetLinks() {
   const forgotLink = document.getElementById("forgotLink");
   const resetBackLink = document.getElementById("resetBackLink");
+  const resetOtpBackLink = document.getElementById("resetOtpBackLink");
 
   if (forgotLink) {
     forgotLink.addEventListener("click", e => {
@@ -209,13 +217,41 @@ function initResetLinks() {
       }
     });
   }
+
+  if (resetOtpBackLink) {
+    resetOtpBackLink.addEventListener("click", e => {
+      e.preventDefault();
+      showResetView();
+    });
+  }
 }
 
 function showResetView() {
   document.getElementById("loginView").classList.add("hidden");
   document.getElementById("registerView").classList.add("hidden");
   document.getElementById("resetView").classList.remove("hidden");
+  document.getElementById("resetOtpView").classList.add("hidden");
   document.getElementById("headerDesc").innerText = "Đặt lại mật khẩu";
+
+  const phoneInput = document.getElementById("resetPhone");
+  const phoneMsg = document.getElementById("resetPhoneMessage");
+  const otpInput = document.getElementById("resetOtpInput");
+  const newPassword = document.getElementById("resetNewPassword");
+  const confirmPassword = document.getElementById("resetConfirmPassword");
+  const otpMsg = document.getElementById("resetOtpMessage");
+
+  if (phoneInput) phoneInput.value = "";
+  if (otpInput) otpInput.value = "";
+  if (newPassword) newPassword.value = "";
+  if (confirmPassword) confirmPassword.value = "";
+  if (phoneMsg) clearMessage(phoneMsg);
+  if (otpMsg) clearMessage(otpMsg);
+}
+
+function showResetOtpView() {
+  document.getElementById("resetView").classList.add("hidden");
+  document.getElementById("resetOtpView").classList.remove("hidden");
+  document.getElementById("headerDesc").innerText = "Nhập OTP và đặt mật khẩu mới";
 }
 
 /* ================= HELPERS ================= */
