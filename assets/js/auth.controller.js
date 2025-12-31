@@ -5,6 +5,7 @@ import {
   verifyOtp,
   resetPassword
 } from "./auth.service.js";
+import { saveRole } from "./auth.state.js";
 
 export function initAuth() {
   initLogin();
@@ -104,11 +105,18 @@ function initRegister() {
     }
 
     try {
+      // Lấy role từ UI (mặc định "user" nếu không tìm thấy)
+      const role = document.querySelector('input[name="role"]:checked')?.value || "user";
+
       registerUser({
         phone: phone.value.trim(),
         name: document.getElementById("fullName").value.trim(),
-        password: document.getElementById("regPassword").value.trim()
+        password: document.getElementById("regPassword").value.trim(),
+        role
       });
+
+      // Lưu role tạm thời vào session để dùng sau (redirect, v.v.)
+      try { saveRole(phone.value.trim(), role); } catch (e) {}
 
       showMessage(msg, "Đăng ký thành công", "success");
       setTimeout(showLogin, 1000);

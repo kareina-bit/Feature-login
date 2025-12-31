@@ -79,7 +79,7 @@ body::before {
     display: flex;
     align-items: center;
     border-bottom: 1px solid #ddd;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .prefix {
@@ -93,6 +93,23 @@ input {
     font-size: 16px;
     padding: 14px 0;
     flex: 1;
+}
+
+/* OTP Section Spacing */
+#otpSection {
+    margin-bottom: 16px;
+}
+
+#regDetailsSection {
+    margin-bottom: 16px;
+}
+
+#otpSection .input-group {
+    margin-bottom: 16px;
+}
+
+#regDetailsSection .input-group {
+    margin-bottom: 16px;
 }
 
 /* Button */
@@ -212,6 +229,45 @@ input {
 
 /* Small adjustments for register/reset steps */
 #otpSection, #resetOtpStep, #resetPasswordStep, #regDetailsSection { margin-top: 8px }
+
+/* Role Selector */
+.role-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    justify-content: space-between;
+}
+
+.role-option {
+    flex: 1;
+    cursor: pointer;
+}
+
+.role-label {
+    display: block;
+    padding: 14px 12px;
+    text-align: center;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    color: #666;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.role-label:hover {
+    border-color: #5ba3d0;
+    background: #f0f8ff;
+}
+
+.role-option input:checked + .role-label {
+    background: #5ba3d0;
+    color: white;
+    border-color: #5ba3d0;
+    box-shadow: 0 4px 12px rgba(91, 163, 208, 0.3);
+}
 
 /* OTP Notification */
 .otp-notification {

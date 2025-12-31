@@ -1,10 +1,10 @@
 import { getUsers, saveUsers, findUser } from "./api.js";
 import { saveOtp, getOtp, clearOtp } from "./auth.state.js";
 
-export function registerUser({ phone, name, password }) {
+export function registerUser({ phone, name, password, role = "user" }) {
   if (findUser(phone)) throw "Tài khoản đã tồn tại";
   const users = getUsers();
-  users.push({ phone, name, password });
+  users.push({ phone, name, password, role });
   saveUsers(users);
 }
 

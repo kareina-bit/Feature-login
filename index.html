@@ -66,6 +66,18 @@
     <div class="card hidden" id="registerView">
         <h2>Đăng ký tài khoản</h2>
 
+        <!-- Role chọn (mặc định "user") -->
+        <div class="role-selector">
+          <label class="role-option">
+            <input type="radio" name="role" value="user" checked style="display: none;">
+            <span class="role-label">Đối tác vận chuyển</span>
+          </label>
+          <label class="role-option">
+            <input type="radio" name="role" value="driver" style="display: none;">
+            <span class="role-label">Đăng ký tài xế Shipway</span>
+          </label>
+        </div>
+
         <form id="registerForm" novalidate>
             <div class="input-group phone-group">
                 <select id="regCountry" class="country-select">
