@@ -1,0 +1,331 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background: #eaf4ff;
+    background-image: url('../../img/Screenshot_1.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #eaf4ff;
+    opacity: 0.7;
+    z-index: -1;
+}
+/* Layout */
+.page {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 40px 16px;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.logo {
+    color: #0068ff;
+    font-size: 42px;
+    font-weight: 700;
+}
+
+.logo-img {
+    max-width: 200px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.desc {
+    margin-top: 8px;
+    color: #444;
+    font-size: 14px;
+}
+
+/* Card */
+.card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 32px;   /* trước 24 */
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+}
+
+.card h2 {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 24px;
+}
+
+/* Input */
+.input-group {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 16px;
+}
+
+.prefix {
+    margin-right: 8px;
+    color: #555;
+}
+
+input {
+    border: none;
+    outline: none;
+    font-size: 16px;
+    padding: 14px 0;
+    flex: 1;
+}
+
+/* OTP Section Spacing */
+#otpSection {
+    margin-bottom: 16px;
+}
+
+#regDetailsSection {
+    margin-bottom: 16px;
+}
+
+#otpSection .input-group {
+    margin-bottom: 16px;
+}
+
+#regDetailsSection .input-group {
+    margin-bottom: 16px;
+}
+
+/* Button */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: #7cc7ff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background: #5ab6ff;
+}
+
+/* Links */
+.link {
+    display: block;
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+}
+
+.link.strong {
+    color: #0068ff;
+    font-weight: 500;
+}
+
+/* Divider */
+.divider {
+    height: 1px;
+    background: #eee;
+    margin: 20px 0;
+}
+.phone-group {
+    gap: 8px;
+}
+
+.country-select {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 6px 0;
+}
+.country-select option {
+    font-size: 14px;
+}
+
+/* Toast notifications */
+.toast {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%) translateY(-10px);
+        top: 24px;
+        background: #222;
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        opacity: 0;
+        transition: all 0.25s ease;
+        z-index: 9999;
+        pointer-events: none;
+}
+.toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.toast-toast { background: #222 }
+.toast-success { background: #2ecc71 }
+.toast-error { background: #ff6b6b }
+.toast-info { background: #0068ff }
+
+/* OTP modal for forgot password */
+.otp-modal {
+    position: fixed;
+    inset: 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: rgba(0,0,0,0.35);
+    z-index: 9998;
+}
+.otp-modal-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    width: 320px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.otp-modal-card h3 { margin-bottom: 8px }
+.otp-modal-card input { width:100%; padding:10px; margin-top:8px; border:1px solid #eee; border-radius:6px }
+
+/* Hidden helper */
+.hidden {
+    display: none;
+}
+
+
+/* Inline form messages (errors / success / info) */
+.form-message {
+    margin-top: 8px;
+    font-size: 14px;
+    min-height: 18px;
+}
+.form-message.error { color: #ff4d4f }
+.form-message.success { color: #2e7d32 }
+.form-message.info { color: #0068ff }
+
+/* OTP description */
+.otp-desc { font-size: 14px; color: #444; margin-bottom: 8px }
+
+/* Small adjustments for register/reset steps */
+#otpSection, #resetOtpStep, #resetPasswordStep, #regDetailsSection { margin-top: 8px }
+
+/* Role Selector */
+.role-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    justify-content: space-between;
+}
+
+.role-option {
+    flex: 1;
+    cursor: pointer;
+}
+
+.role-label {
+    display: block;
+    padding: 14px 12px;
+    text-align: center;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    color: #666;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.role-label:hover {
+    border-color: #5ba3d0;
+    background: #f0f8ff;
+}
+
+.role-option input:checked + .role-label {
+    background: #5ba3d0;
+    color: white;
+    border-color: #5ba3d0;
+    box-shadow: 0 4px 12px rgba(91, 163, 208, 0.3);
+}
+
+/* OTP Notification */
+.otp-notification {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.otp-notification.hidden {
+    display: none;
+}
+
+.otp-notification-content {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.otp-notification-content h3 {
+    margin-bottom: 16px;
+    color: #0068ff;
+    font-size: 18px;
+}
+
+.otp-notification-content p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #444;
+}
+
+.otp-code {
+    font-size: 24px;
+    color: #0068ff;
+    letter-spacing: 4px;
+    font-weight: bold;
+    display: inline-block;
+    padding: 8px 16px;
+    background: #eaf4ff;
+    border-radius: 6px;
+    margin: 8px 0;
+}
+
+.otp-note {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+    margin-top: 12px;
+}
+
