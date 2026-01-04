@@ -8,7 +8,6 @@ Hướng dẫn cho team members về cách setup và contribute vào dự án.
 
 ```bash
 git clone <repository-url>
-cd Shipwayyyy
 ```
 
 ### 2. Setup Backend
