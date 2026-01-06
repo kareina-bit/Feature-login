@@ -387,3 +387,24 @@ form.submitted .form-message:empty {
 .form-message.error {
   animation: shake 0.3s ease-out;
 }
+
+/* Style cho nút Back */
+.card {
+  position: relative; /* Đảm bảo nút con căn lề theo card */
+  padding-top: 40px;  /* Tạo không gian phía trên để không đè vào tiêu đề h2 */
+}
+
+.back-home-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  color: #666;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+.back-home-btn:hover {
+  color: #007bff; /* Màu xanh khi hover, bạn có thể đổi theo màu chủ đạo của Shipway */
+}
