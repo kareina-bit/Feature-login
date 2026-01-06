@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Shipway Demo</title>
+</head>
+<body>
+
+  <h1>Shipway</h1>
+  <nav>
+    <a href="#/login">Login</a> |
+    <a href="#/profile">Profile</a> |
+    <button onclick="logout()">Logout</button>
+  </nav>
+
+  <hr />
+
+  <!-- Nơi render microservice -->
+  <div id="app"></div>
+
+  <script src="../shared/event-bus.js"></script>
+  <script src="router.js"></script>
+  <script src="shell.js"></script>
+</body>
+</html>
