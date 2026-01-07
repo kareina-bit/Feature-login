@@ -1,8 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
-  // Backend API URL
-  // Use port 8000 for FastAPI backend, or 5000 for Node.js backend
-  BASE_URL: 'http://localhost:8000/api',
+  // Backend API URL (Node.js/Express backend)
+  BASE_URL: 'http://localhost:5000/api',
   
   // Timeout settings
   TIMEOUT: 30000, // 30 seconds

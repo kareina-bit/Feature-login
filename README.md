@@ -39,18 +39,6 @@ Shipwayyyy/
 │   ├── server.js        # Entry point
 │   └── package.json
 │
-├── backend-fastapi/     # Python + FastAPI + MongoDB (PORT 8000) ⭐ RECOMMENDED
-│   ├── app/
-│   │   ├── api/         # API routes & dependencies
-│   │   ├── core/        # Config, database, security
-│   │   ├── models/      # Database models
-│   │   ├── schemas/     # Pydantic schemas
-│   │   ├── services/    # Business logic
-│   │   ├── utils/       # Utilities
-│   │   └── middleware/  # CORS, error handlers
-│   ├── main.py          # Entry point
-│   └── requirements.txt
-│
 ├── frontend/            # Vanilla JS (HTML/CSS/JS)
 │   ├── assets/
 │   │   ├── css/
@@ -68,44 +56,12 @@ Shipwayyyy/
 
 ### Prerequisites
 
-**Chọn 1 trong 2 backend:**
-
-#### Option A: FastAPI Backend (Recommended ⭐)
-- Python 3.10+
-- pip
-- MongoDB Atlas account
-- Twilio account (optional for SMS OTP)
-
-#### Option B: Node.js Backend  
 - Node.js >= 18.x
 - npm
 - MongoDB Atlas account
 - Twilio account (optional for SMS OTP)
 
 ### Backend Setup
-
-#### Option A: FastAPI Backend (Python) ⭐
-
-```bash
-# 1. Tạo virtual environment
-cd backend-fastapi
-python -m venv venv
-venv\Scripts\activate  # Windows
-# source venv/bin/activate  # macOS/Linux
-
-# 2. Cài đặt dependencies
-pip install -r requirements.txt
-
-# 3. Cấu hình môi trường
-# Tạo file .env (xem .env.example)
-
-# 4. Chạy server
-uvicorn main:app --reload --port 8000
-# Server chạy tại http://localhost:8000
-# API Docs: http://localhost:8000/docs
-```
-
-#### Option B: Node.js Backend
 
 ```bash
 # 1. Cài đặt dependencies
@@ -124,12 +80,7 @@ npm run dev
 ### Frontend Setup
 
 ```bash
-# 1. Cấu hình API URL
-# Mở frontend/config/env.js và cập nhật BASE_URL:
-# - FastAPI: http://localhost:8000/api
-# - Node.js: http://localhost:5000/api
-
-# 2. Chạy với Live Server
+# Chạy với Live Server
 cd frontend
 # Mở index.html với VS Code Live Server (port 5500)
 # hoặc:
@@ -142,18 +93,10 @@ python -m http.server 5500
 
 ### Tài liệu chi tiết
 
-#### Backend Documentation
-- **FastAPI Backend** ⭐
-  - [Setup Guide](backend-fastapi/SETUP_GUIDE.md) - Hướng dẫn cài đặt chi tiết
-  - [README](backend-fastapi/README.md) - Tổng quan và API
-  - [API Examples](backend-fastapi/API_EXAMPLES.md) - Ví dụ sử dụng API
-  
-- **Node.js Backend**
-  - [Backend Documentation](docs/BACKEND_DOCUMENTATION.md) - Chi tiết về API, Database, Security
-  - [Backend README](backend/README.md) - Hướng dẫn setup backend
-
-#### General Documentation
+- [Backend Documentation](docs/BACKEND_DOCUMENTATION.md) - Chi tiết về API, Database, Security
+- [Backend README](backend/README.md) - Hướng dẫn setup backend
 - [Frontend README](frontend/README.md) - Hướng dẫn setup frontend
+- [Database Schema](docs/DATABASE_SCHEMA.md) - Thiết kế database chi tiết
 
 ### API Endpoints
 
