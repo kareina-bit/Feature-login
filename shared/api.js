@@ -1,39 +1,39 @@
-import { API_CONFIG, STORAGE_KEYS } from '../../config/env.js';
+import { API_CONFIG } from '../frontend/config/env.js';
 
 /**
  * Get auth token from localStorage
  */
 export const getAuthToken = () => {
-  return localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+  return localStorage.getItem('shipway_token');
 };
 
 /**
  * Set auth token to localStorage
  */
 export const setAuthToken = (token) => {
-  localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
+  localStorage.setItem('shipway_token', token);
 };
 
 /**
  * Remove auth token from localStorage
  */
 export const removeAuthToken = () => {
-  localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
-  localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+  localStorage.removeItem('shipway_token');
+  localStorage.removeItem('shipway_user');
 };
 
 /**
  * Save user data to localStorage
  */
 export const saveUser = (user) => {
-  localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+  localStorage.setItem('shipway_user', JSON.stringify(user));
 };
 
 /**
  * Get user data from localStorage
  */
 export const getUser = () => {
-  const userData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
+  const userData = localStorage.getItem('shipway_user');
   return userData ? JSON.parse(userData) : null;
 };
 
@@ -96,7 +96,7 @@ export const apiRequest = async (endpoint, options = {}) => {
 };
 
 /**
- * API Methods
+ * API Methods for Backend Integration (Node.js)
  */
 
 // Auth APIs
@@ -151,20 +151,5 @@ export const updateProfile = async (profileData) => {
     method: 'PUT',
     body: profileData
   });
-};
-
-// Legacy compatibility (for old code if any)
-export const getUsers = () => {
-  console.warn('getUsers() is deprecated. Use API calls instead.');
-  return [];
-};
-
-export const saveUsers = () => {
-  console.warn('saveUsers() is deprecated. Use API calls instead.');
-};
-
-export const findUser = () => {
-  console.warn('findUser() is deprecated. Use API calls instead.');
-  return null;
 };
 

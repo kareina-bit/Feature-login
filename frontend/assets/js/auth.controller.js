@@ -1,327 +1,384 @@
+/**
+ * Auth Controller - UI Logic
+ * Xử lý DOM events, form validation, UI updates
+ */
+
 import {
   loginUser,
   registerUser,
   sendOtp,
   verifyOtp,
-  resetPassword
-} from "./auth.service.js";
+  resetPassword,
+  logout,
+  getCurrentUser,
+  isAuthenticated
+} from './auth.js';
 
-export function initAuth() {
+import { eventBus, AUTH_EVENTS } from '../../../shared/event-bus.js';
+
+/**
+ * Initialize Auth Service
+ */
+export function initAuthService() {
   initLogin();
   initRegister();
   initResetPassword();
-  initResetLinks();
+  setupEventListeners();
+}
+
+/**
+ * Setup global event listeners
+ */
+function setupEventListeners() {
+  // Listen for login success from other services
+  eventBus.on(AUTH_EVENTS.LOGIN_SUCCESS, (data) => {
+    console.log('User logged in:', data.user);
+  });
+
+  // Listen for logout from other services
+  eventBus.on(AUTH_EVENTS.LOGOUT, () => {
+    console.log('User logged out');
+    redirectToLogin();
+  });
+
+  // Listen for token expired
+  eventBus.on(AUTH_EVENTS.TOKEN_EXPIRED, () => {
+    console.log('Token expired, please login again');
+    logout();
+    redirectToLogin();
+  });
 }
 
 /* ================= LOGIN ================= */
 
 function initLogin() {
-  const form = document.getElementById("loginForm");
+  const form = document.getElementById('loginForm');
   if (!form) return;
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    form.classList.add("submitted");
+    form.classList.add('submitted');
 
-    const msg = document.getElementById("loginMessage");
+    const msg = document.getElementById('loginMessage');
     clearMessage(msg);
 
     if (!form.checkValidity()) {
-      showMessage(msg, "Vui lòng nhập đầy đủ thông tin", "error");
-      form.querySelector(":invalid").focus();
+      showMessage(msg, 'Vui lòng nhập đầy đủ thông tin', 'error');
+      form.querySelector(':invalid').focus();
       return;
     }
 
-    const phone = document.getElementById("loginPhone").value.trim();
-    const password = document.getElementById("loginPassword").value.trim();
+    const phone = document.getElementById('loginPhone').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const countryCode = document.getElementById('loginCountry')?.value || '+84';
+    const fullPhone = phone.startsWith('+') ? phone : `${countryCode}${phone}`;
 
     // Show loading
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
-    submitBtn.textContent = "Đang xử lý...";
+    submitBtn.textContent = 'Đang xử lý...';
     submitBtn.disabled = true;
 
     try {
-      const response = await loginUser(phone, password);
-      showMessage(msg, response.message || "Đăng nhập thành công", "success");
-      
+      const response = await loginUser(fullPhone, password);
+      showMessage(msg, response.message || 'Đăng nhập thành công', 'success');
+
       // Redirect based on role
       setTimeout(() => {
         const user = response.user;
         if (user.role === 'admin') {
-          window.location.href = "/admin/dashboard.html";
+          window.location.href = '/admin/dashboard.html';
         } else if (user.role === 'driver') {
-          window.location.href = "/driver/dashboard.html";
+          window.location.href = '/driver/dashboard.html';
         } else {
-          window.location.href = "/user/dashboard.html";
+          window.location.href = '/user/dashboard.html';
         }
       }, 1000);
     } catch (err) {
-      showMessage(msg, err, "error");
+      showMessage(msg, err.message || 'Đăng nhập thất bại', 'error');
       submitBtn.textContent = originalText;
       submitBtn.disabled = false;
     }
   });
+
+  // Handle forgot password link
+  const forgotLink = document.getElementById('forgotLink');
+  if (forgotLink) {
+    forgotLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      showResetPassword();
+    });
+  }
 }
 
 /* ================= REGISTER ================= */
 
 function initRegister() {
-  const form = document.getElementById("registerForm");
+  const form = document.getElementById('registerForm');
   if (!form) return;
 
-  const phone = document.getElementById("regPhone");
-  const otpInput = document.getElementById("regOtpInput");
-  const sendOtpBtn = document.getElementById("sendOtpBtn");
-  const otpSection = document.getElementById("otpSection");
-  const msg = document.getElementById("registerMessage");
+  const phone = document.getElementById('regPhone');
+  const otpInput = document.getElementById('regOtpInput');
+  const sendOtpBtn = document.getElementById('sendOtpBtn');
+  const otpSection = document.getElementById('otpSection');
+  const nameSection = document.getElementById('nameSection');
+  const passwordSection = document.getElementById('passwordSection');
+  const registerSubmitBtn = document.getElementById('registerSubmitBtn');
+  const msg = document.getElementById('registerMessage');
 
   let otpSent = false;
 
-  sendOtpBtn.addEventListener("click", async () => {
+  sendOtpBtn.addEventListener('click', async () => {
     clearMessage(msg);
 
     if (!phone.value.trim()) {
-      showMessage(msg, "Vui lòng nhập số điện thoại", "error");
+      showMessage(msg, 'Vui lòng nhập số điện thoại', 'error');
       phone.focus();
       return;
     }
 
     // Show loading
     const originalText = sendOtpBtn.textContent;
-    sendOtpBtn.textContent = "Đang gửi...";
+    sendOtpBtn.textContent = 'Đang gửi...';
     sendOtpBtn.disabled = true;
 
     try {
-      await sendOtp(phone.value.trim(), { purpose: 'register' });
+      const countryCode = document.getElementById('regCountry')?.value || '+84';
+      const fullPhone = phone.value.trim().startsWith('+')
+        ? phone.value.trim()
+        : `${countryCode}${phone.value.trim()}`;
+
+      await sendOtp(fullPhone, { purpose: 'register' });
       otpSent = true;
       phone.disabled = true;
-      otpSection.classList.remove("hidden");
-      sendOtpBtn.textContent = "Gửi lại mã";
+      otpSection.classList.remove('hidden');
+      nameSection.classList.remove('hidden');
+      passwordSection.classList.remove('hidden');
+      registerSubmitBtn.classList.remove('hidden');
+      sendOtpBtn.textContent = 'Gửi lại mã';
       sendOtpBtn.disabled = false;
-      showMessage(msg, "OTP đã được gửi", "success");
+      showMessage(msg, 'Mã OTP đã được gửi', 'success');
     } catch (err) {
-      showMessage(msg, err, "error");
+      showMessage(msg, err.message || 'Gửi OTP thất bại', 'error');
       sendOtpBtn.textContent = originalText;
       sendOtpBtn.disabled = false;
     }
   });
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    form.classList.add("submitted");
+    form.classList.add('submitted');
+
     clearMessage(msg);
 
-    if (!otpSent) {
-      showMessage(msg, "Vui lòng gửi OTP trước", "error");
+    if (!form.checkValidity()) {
+      showMessage(msg, 'Vui lòng nhập đầy đủ thông tin', 'error');
+      form.querySelector(':invalid').focus();
       return;
     }
 
-    if (!form.checkValidity()) {
-      showMessage(msg, "Vui lòng điền đầy đủ thông tin", "error");
-      form.querySelector(":invalid").focus();
+    if (!otpSent) {
+      showMessage(msg, 'Vui lòng gửi mã OTP trước', 'error');
       return;
     }
+
+    const phoneValue = phone.value.trim();
+    const countryCode = document.getElementById('regCountry')?.value || '+84';
+    const fullPhone = phoneValue.startsWith('+') ? phoneValue : `${countryCode}${phoneValue}`;
+    const name = document.getElementById('regName').value.trim();
+    const password = document.getElementById('regPassword').value.trim();
+    const otp = otpInput.value.trim();
+    const role = document.querySelector('input[name="role"]:checked')?.value || 'user';
 
     // Show loading
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
-    submitBtn.textContent = "Đang xử lý...";
+    submitBtn.textContent = 'Đang xử lý...';
     submitBtn.disabled = true;
 
     try {
-      // Get role from UI
-      const role = document.querySelector('input[name="role"]:checked')?.value || "user";
-
       const response = await registerUser({
-        phone: phone.value.trim(),
-        name: document.getElementById("fullName").value.trim(),
-        password: document.getElementById("regPassword").value.trim(),
-        otp: otpInput.value.trim(),
+        phone: fullPhone,
+        name,
+        password,
+        otp,
         role
       });
 
-      showMessage(msg, response.message || "Đăng ký thành công", "success");
+      showMessage(msg, response.message || 'Đăng ký thành công', 'success');
+
       setTimeout(() => {
-        if (typeof window.showLogin === "function") {
-          window.showLogin();
-        }
-      }, 1500);
+        window.location.href = '/user/dashboard.html';
+      }, 1000);
     } catch (err) {
-      showMessage(msg, err, "error");
+      showMessage(msg, err.message || 'Đăng ký thất bại', 'error');
       submitBtn.textContent = originalText;
       submitBtn.disabled = false;
     }
   });
 }
 
-/* ================= RESET PASSWORD (TWO VIEWS) ================= */
+/* ================= RESET PASSWORD ================= */
 
 function initResetPassword() {
-  const phoneForm = document.getElementById("resetForm");
-  const otpForm = document.getElementById("resetOtpForm");
-  if (!phoneForm && !otpForm) return;
+  const form = document.getElementById('resetForm');
+  if (!form) return;
 
-  const phoneInput = document.getElementById("resetPhone");
-  const phoneMsg = document.getElementById("resetPhoneMessage");
-  const otpInput = document.getElementById("resetOtpInput");
-  const newPassword = document.getElementById("resetNewPassword");
-  const confirmPassword = document.getElementById("resetConfirmPassword");
-  const otpMsg = document.getElementById("resetOtpMessage");
+  const phone = document.getElementById('resetPhone');
+  const otpInput = document.getElementById('resetOtpInput');
+  const sendOtpBtn = document.getElementById('resetSendOtpBtn');
+  const otpSection = document.getElementById('resetOtpSection');
+  const newPasswordSection = document.getElementById('newPasswordSection');
+  const resetSubmitBtn = document.getElementById('resetSubmitBtn');
+  const msg = document.getElementById('resetMessage');
 
-  let phoneValue = "";
+  let otpSent = false;
 
-  if (phoneForm) {
-    phoneForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      phoneForm.classList.add("submitted");
-      clearMessage(phoneMsg);
+  sendOtpBtn.addEventListener('click', async () => {
+    clearMessage(msg);
 
-      if (!phoneInput.value.trim()) {
-        showMessage(phoneMsg, "Nhập số điện thoại", "error");
-        phoneInput.focus();
-        return;
-      }
+    if (!phone.value.trim()) {
+      showMessage(msg, 'Vui lòng nhập số điện thoại', 'error');
+      phone.focus();
+      return;
+    }
 
-      // Show loading
-      const submitBtn = phoneForm.querySelector('button[type="submit"]');
-      const originalText = submitBtn.textContent;
-      submitBtn.textContent = "Đang gửi...";
-      submitBtn.disabled = true;
+    const originalText = sendOtpBtn.textContent;
+    sendOtpBtn.textContent = 'Đang gửi...';
+    sendOtpBtn.disabled = true;
 
-      try {
-        await sendOtp(phoneInput.value.trim(), { requireUser: true });
-        phoneValue = phoneInput.value.trim();
-        showMessage(phoneMsg, "Đã gửi mã OTP. Vui lòng kiểm tra tin nhắn.", "success");
-        setTimeout(() => {
-          showResetOtpView();
-        }, 1000);
-      } catch (err) {
-        showMessage(phoneMsg, err, "error");
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-      }
-    });
-  }
+    try {
+      const countryCode = document.getElementById('resetCountry')?.value || '+84';
+      const fullPhone = phone.value.trim().startsWith('+')
+        ? phone.value.trim()
+        : `${countryCode}${phone.value.trim()}`;
 
-  if (otpForm) {
-    otpForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      otpForm.classList.add("submitted");
-      clearMessage(otpMsg);
+      await sendOtp(fullPhone, { purpose: 'reset-password' });
+      otpSent = true;
+      phone.disabled = true;
+      otpSection.classList.remove('hidden');
+      newPasswordSection.classList.remove('hidden');
+      resetSubmitBtn.classList.remove('hidden');
+      sendOtpBtn.textContent = 'Gửi lại mã';
+      sendOtpBtn.disabled = false;
+      showMessage(msg, 'Mã OTP đã được gửi', 'success');
+    } catch (err) {
+      showMessage(msg, err.message || 'Gửi OTP thất bại', 'error');
+      sendOtpBtn.textContent = originalText;
+      sendOtpBtn.disabled = false;
+    }
+  });
 
-      if (!phoneValue) {
-        showMessage(otpMsg, "Vui lòng nhập số điện thoại trước", "error");
-        showResetView();
-        return;
-      }
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    form.classList.add('submitted');
 
-      if (!otpInput.value.trim() || !newPassword.value.trim() || !confirmPassword.value.trim()) {
-        showMessage(otpMsg, "Vui lòng nhập đầy đủ thông tin", "error");
-        return;
-      }
+    clearMessage(msg);
 
-      if (newPassword.value.trim() !== confirmPassword.value.trim()) {
-        showMessage(otpMsg, "Mật khẩu xác nhận không khớp", "error");
-        return;
-      }
+    if (!form.checkValidity()) {
+      showMessage(msg, 'Vui lòng nhập đầy đủ thông tin', 'error');
+      form.querySelector(':invalid').focus();
+      return;
+    }
 
-      // Show loading
-      const submitBtn = otpForm.querySelector('button[type="submit"]');
-      const originalText = submitBtn.textContent;
-      submitBtn.textContent = "Đang xử lý...";
-      submitBtn.disabled = true;
+    if (!otpSent) {
+      showMessage(msg, 'Vui lòng gửi mã OTP trước', 'error');
+      return;
+    }
 
-      try {
-        const response = await resetPassword(phoneValue, otpInput.value.trim(), newPassword.value.trim());
-        showMessage(otpMsg, response.message || "Đặt lại mật khẩu thành công", "success");
-        setTimeout(() => {
-          if (typeof window.showLogin === "function") {
-            window.showLogin();
-          }
-        }, 1500);
-      } catch (err) {
-        showMessage(otpMsg, err, "error");
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-      }
-    });
-  }
+    const phoneValue = phone.value.trim();
+    const countryCode = document.getElementById('resetCountry')?.value || '+84';
+    const fullPhone = phoneValue.startsWith('+') ? phoneValue : `${countryCode}${phoneValue}`;
+    const otp = otpInput.value.trim();
+    const newPassword = document.getElementById('resetPassword').value.trim();
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Đang xử lý...';
+    submitBtn.disabled = true;
+
+    try {
+      const response = await resetPassword(fullPhone, otp, newPassword);
+      showMessage(msg, response.message || 'Đặt lại mật khẩu thành công', 'success');
+
+      setTimeout(() => {
+        showLogin();
+      }, 1000);
+    } catch (err) {
+      showMessage(msg, err.message || 'Đặt lại mật khẩu thất bại', 'error');
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    }
+  });
 }
 
-/* ================= RESET LINKS ================= */
+/* ================= UI HELPERS ================= */
 
-function initResetLinks() {
-  const forgotLink = document.getElementById("forgotLink");
-  const resetBackLink = document.getElementById("resetBackLink");
-  const resetOtpBackLink = document.getElementById("resetOtpBackLink");
-
-  if (forgotLink) {
-    forgotLink.addEventListener("click", e => {
-      e.preventDefault();
-      showResetView();
-    });
-  }
-
-  if (resetBackLink) {
-    resetBackLink.addEventListener("click", e => {
-      e.preventDefault();
-      if (typeof window.showLogin === "function") {
-        window.showLogin();
-      }
-    });
-  }
-
-  if (resetOtpBackLink) {
-    resetOtpBackLink.addEventListener("click", e => {
-      e.preventDefault();
-      showResetView();
-    });
-  }
+/**
+ * Show message in form
+ */
+function showMessage(element, message, type = 'info') {
+  if (!element) return;
+  element.textContent = message;
+  element.className = `form-message ${type}`;
 }
 
-function showResetView() {
-  document.getElementById("loginView").classList.add("hidden");
-  document.getElementById("registerView").classList.add("hidden");
-  document.getElementById("resetView").classList.remove("hidden");
-  document.getElementById("resetOtpView").classList.add("hidden");
-  document.getElementById("headerDesc").innerText = "Đặt lại mật khẩu";
-
-  const phoneInput = document.getElementById("resetPhone");
-  const phoneMsg = document.getElementById("resetPhoneMessage");
-  const otpInput = document.getElementById("resetOtpInput");
-  const newPassword = document.getElementById("resetNewPassword");
-  const confirmPassword = document.getElementById("resetConfirmPassword");
-  const otpMsg = document.getElementById("resetOtpMessage");
-
-  if (phoneInput) phoneInput.value = "";
-  if (otpInput) otpInput.value = "";
-  if (newPassword) newPassword.value = "";
-  if (confirmPassword) confirmPassword.value = "";
-  if (phoneMsg) clearMessage(phoneMsg);
-  if (otpMsg) clearMessage(otpMsg);
+/**
+ * Clear message
+ */
+function clearMessage(element) {
+  if (!element) return;
+  element.textContent = '';
+  element.className = 'form-message';
 }
 
-function showResetOtpView() {
-  document.getElementById("resetView").classList.add("hidden");
-  document.getElementById("resetOtpView").classList.remove("hidden");
-  document.getElementById("headerDesc").innerText = "Nhập OTP và đặt mật khẩu mới";
+/**
+ * Show login view
+ */
+function showLogin() {
+  const loginView = document.getElementById('loginView');
+  const registerView = document.getElementById('registerView');
+  const resetView = document.getElementById('resetView');
+
+  if (loginView) loginView.classList.remove('hidden');
+  if (registerView) registerView.classList.add('hidden');
+  if (resetView) resetView.classList.add('hidden');
 }
 
-/* ================= HELPERS ================= */
+/**
+ * Show register view
+ */
+function showRegister() {
+  const loginView = document.getElementById('loginView');
+  const registerView = document.getElementById('registerView');
+  const resetView = document.getElementById('resetView');
 
-function showMessage(el, text, type) {
-  el.textContent = text;
-  el.className = `form-message ${type}`;
+  if (loginView) loginView.classList.add('hidden');
+  if (registerView) registerView.classList.remove('hidden');
+  if (resetView) resetView.classList.add('hidden');
 }
 
-function clearMessage(el) {
-  el.textContent = "";
-  el.className = "form-message";
+/**
+ * Show reset password view
+ */
+function showResetPassword() {
+  const loginView = document.getElementById('loginView');
+  const registerView = document.getElementById('registerView');
+  const resetView = document.getElementById('resetView');
+
+  if (loginView) loginView.classList.add('hidden');
+  if (registerView) registerView.classList.add('hidden');
+  if (resetView) resetView.classList.remove('hidden');
 }
 
-function error(id, text) {
-  showMessage(document.getElementById(id), text, "error");
+/**
+ * Redirect to login
+ */
+function redirectToLogin() {
+  window.location.href = '/';
 }
-initAuth();
 
+// Export functions for global use
+window.showRegister = showRegister;
+window.showLogin = showLogin;
+window.showResetPassword = showResetPassword;
