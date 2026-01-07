@@ -43,10 +43,20 @@ export const getUser = () => {
 export const apiRequest = async (endpoint, options = {}) => {
   const url = `${API_CONFIG.BASE_URL}${endpoint}`;
   
-  const headers = {
+  // Mặc định là JSON, nhưng cho phép ghi đè nếu options.headers có Content-Type khác
+  const defaultHeaders = {
     'Content-Type': 'application/json',
-    ...options.headers
   };
+
+  const headers = {
+    ...defaultHeaders,
+    ...options.headers // Header truyền vào sẽ ghi đè mặc định
+  };
+
+  // Nếu gửi FormData (upload ảnh) thì xoá Content-Type để trình duyệt tự set boundary
+  if (options.body instanceof FormData) {
+      delete headers['Content-Type'];
+  }
 
   // Add auth token if available
   const token = getAuthToken();
@@ -60,9 +70,13 @@ export const apiRequest = async (endpoint, options = {}) => {
     ...options
   };
 
-  // Add body if present
+  // Add body logic: Chỉ stringify nếu nó là object thuần (không phải FormData/URLSearchParams)
   if (options.body) {
-    config.body = JSON.stringify(options.body);
+    if (options.body instanceof FormData || options.body instanceof URLSearchParams) {
+        config.body = options.body; // Giữ nguyên, không stringify
+    } else {
+        config.body = JSON.stringify(options.body); // JSON thường
+    }
   }
 
   try {
@@ -70,7 +84,8 @@ export const apiRequest = async (endpoint, options = {}) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Request failed');
+      // Ném ra object lỗi đầy đủ để catch bên ngoài đọc được detail
+      throw new Error(data.detail || data.message || 'Request failed');
     }
 
     return data;
@@ -86,6 +101,7 @@ export const apiRequest = async (endpoint, options = {}) => {
 
 // Auth APIs
 export const sendOTP = async (phone, purpose = 'register') => {
+  // Node.js backend expects "purpose" field
   return await apiRequest(API_CONFIG.ENDPOINTS.SEND_OTP, {
     method: 'POST',
     body: { phone, purpose }
@@ -93,6 +109,7 @@ export const sendOTP = async (phone, purpose = 'register') => {
 };
 
 export const verifyOTP = async (phone, otp, purpose = 'register') => {
+  // Node.js backend expects "purpose" field
   return await apiRequest(API_CONFIG.ENDPOINTS.VERIFY_OTP, {
     method: 'POST',
     body: { phone, otp, purpose }
