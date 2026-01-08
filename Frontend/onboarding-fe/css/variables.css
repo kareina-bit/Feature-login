@@ -40,3 +40,29 @@
   --radius-sm: 6px;
   --radius-md: 10px;
 }
+
+/* =====================================================
+   RESPONSIVE TYPOGRAPHY
+===================================================== */
+@media (max-width: 1024px) {
+  :root {
+    --font-xxl: 32px;
+    --font-xl: 28px;
+    --font-lg: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --font-xxl: 24px;
+    --font-xl: 22px;
+    --font-lg: 16px;
+    --font-base: 14px;
+    --font-sm: 12px;
+    
+    --space-xl: 48px;
+    --space-lg: 32px;
+    --space-md: 16px;
+    --space-sm: 12px;
+  }
+}

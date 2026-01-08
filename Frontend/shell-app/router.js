@@ -1,7 +1,7 @@
 const routes = {
-  '/': '../onboarding-fe/index.html',
-  '/login': '../auth-service/index.html',
-  '/profile': '../profile-service/index.html'
+  '/': 'onboarding-fe/index.html',
+  '/login': 'auth-service/index.html',
+  '/profile': 'profile-service/index.html'
 };
 
 // Store loaded CSS links to manage them
