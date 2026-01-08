@@ -1,3 +1,5 @@
+import { eventBus } from '../shared/event-bus.js';
+
 const TOKEN_KEY = 'token';
 
 function isLoggedIn() {
@@ -6,22 +8,25 @@ function isLoggedIn() {
 
 function logout() {
   localStorage.removeItem(TOKEN_KEY);
-  EventBus.emit('LOGOUT');
+  eventBus.emit('LOGOUT');
 }
+
+// Make logout function globally available
+window.logout = logout;
 
 // Route guard
 window.addEventListener('hashchange', () => {
-  if (!isLoggedIn() && location.hash !== '#/login') {
-    location.hash = '/login';
+  if (!isLoggedIn() && location.hash !== '#/login' && location.hash !== '#/') {
+    location.hash = '/';
   }
 });
 
 // Event listeners
-EventBus.on('LOGIN_SUCCESS', (token) => {
+eventBus.on('LOGIN_SUCCESS', (token) => {
   localStorage.setItem(TOKEN_KEY, token);
   location.hash = '/profile';
 });
 
-EventBus.on('LOGOUT', () => {
-  location.hash = '/login';
+eventBus.on('LOGOUT', () => {
+  location.hash = '/';
 });
