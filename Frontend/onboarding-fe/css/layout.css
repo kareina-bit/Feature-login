@@ -8,7 +8,6 @@
   padding-inline: clamp(12px, 4vw, 96px);
 }
 
-/* Fix overflow mobile */
 @media (max-width: 768px){
   .container{
     padding-inline: 12px;
@@ -30,12 +29,12 @@
    SECTION
 ===================================================== */
 section {
-  padding: clamp(32px, 10vw, 96px) 0;
+  padding: 24px 0;
 }
 
 .section-header {
   max-width: 820px;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 16px;
 }
 
 .section-header.center {
@@ -115,14 +114,13 @@ section {
   border-bottom: 1px solid var(--color-border);
 }
 
-/* BODY TOP SPACING TO AVOID OVERLAP */
 body{
-  padding-top: 100px;
+  padding-top: 20px;
 }
 
 @media (min-width: 769px){
   body{
-    padding-top: 72px;
+    padding-top: 20px;
 }
 }
 .header-inner {
