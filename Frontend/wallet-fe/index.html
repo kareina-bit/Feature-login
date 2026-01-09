@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="css/wallet.css">
 </head>
 
-<body>
-<div class="page">
+<body data-page="wallet-overview">
+<div class="page wallet-overview-page">
 
   <!-- ===== HEADER ===== -->
   <div class="header">
@@ -32,9 +32,9 @@
       <div class="balance-amount" id="walletBalance">0.000 ₫</div>
       <div class="balance-label">Số dư khả dụng</div>
     </div>
-    <button class="btn-primary" onclick="goToTopup()">
-  Nạp tiền vào tài khoản
-</button>
+    <button class="btn-primary" data-action="goto-topup">
+      Nạp tiền vào tài khoản
+    </button>
   </div>
 
   <!-- ===== PAYMENT METHODS ===== -->
@@ -56,7 +56,7 @@
             <td>Quận 1, TP.HCM</td>
             <td><strong>50.000 ₫</strong></td>
             <td>
-              <button class="btn-pay-small" onclick="payOrder('SW1024')">Thanh toán</button>
+              <button class="btn-pay-small" data-pay-order data-order-id="SW1024" data-order-amount="50000" data-order-destination="Quận 1, TP.HCM">Thanh toán</button>
             </td>
           </tr>
           <tr>
@@ -64,7 +64,7 @@
             <td>Quận 7, TP.HCM</td>
             <td><strong>120.000 ₫</strong></td>
             <td>
-              <button class="btn-pay-small" onclick="payOrder('SW1025')">Thanh toán</button>
+              <button class="btn-pay-small" data-pay-order data-order-id="SW1025" data-order-amount="120000" data-order-destination="Quận 7, TP.HCM">Thanh toán</button>
             </td>
           </tr>
         </tbody>
@@ -78,116 +78,15 @@
     <div class="transaction-list" id="transactionList">
       <!-- Transactions will be loaded here -->
     </div>
-    <button class="btn-outline" onclick="loadMoreTransactions()">Xem thêm</button>
+    <button class="btn-outline" data-action="load-more-transactions">Xem thêm</button>
   </div>
 
 
 </div>
 
 <!-- Scripts -->
-<script type="module">
-  import { initWallet } from './js/wallet.js';
-  import { loadTransactionHistory } from './js/history.js';
-  import { initQrPayment } from './js/qr-payment.js';
-
-  // Initialize wallet functionality
-  document.addEventListener('DOMContentLoaded', () => {
-    initWallet();
-    loadTransactionHistory();
-    initQrPayment();
-  });
-let selectedTopupMethod = 'qr';
-
-window.switchTopupMethod = function(method) {
-  selectedTopupMethod = method;
-
-  document.getElementById('qrSection').classList.toggle('hidden', method !== 'qr');
-  document.getElementById('visaSection').classList.toggle('hidden', method !== 'visa');
-};
-function goToTopup() {
-    window.location.href = 'topup.html';
-  }
-window.confirmTopup = function() {
-  const amount = parseInt(document.getElementById('topupAmount').value);
-
-  if (!amount || amount < 10000) {
-    alert('Số tiền nạp không hợp lệ');
-    return;
-  }
-
-  document.querySelector('.modal-body').innerHTML = `
-    <p style="text-align:center">Đang xử lý thanh toán...</p>
-  `;
-
-  setTimeout(() => {
-    const currentBalance = parseFloat(localStorage.getItem('walletBalance') || '0');
-    localStorage.setItem('walletBalance', currentBalance + amount);
-
-    alert(
-      selectedTopupMethod === 'qr'
-        ? 'Nạp tiền thành công qua QR'
-        : 'Nạp tiền thành công qua Visa'
-    );
-
-    closeQrPayment();
-    window.location.reload();
-  }, 5000);
-};
-
-  // Global functions for onclick handlers
-  window.showTransactionHistory = function() {
-    document.getElementById('transactionHistoryCard').scrollIntoView({ behavior: 'smooth' });
-  };
- window.payOrder = function(orderId, amount) {
-    // Lưu thông tin đơn hàng để trang payment dùng
-    localStorage.setItem('currentOrder', JSON.stringify({
-      orderId,
-      amount
-    }));
-
-    // Điều hướng sang trang thanh toán
-    window.location.href = 'payment.html';
-  };
-  window.selectPaymentMethod = function(method) {
-    // Remove active class from all methods
-    document.querySelectorAll('.payment-method').forEach(el => {
-      el.classList.remove('active');
-    });
-    
-    // Add active class to selected method
-    event.currentTarget.classList.add('active');
-    
-    // Store selected method
-    localStorage.setItem('selectedPaymentMethod', method);
-  };
-
-  window.goToTopup = function() {
-    window.location.href = 'topup.html';
-  };
-
-  window.showQrPayment = function() {
-    document.getElementById('qrPaymentModal').classList.remove('hidden');
-    generateQrCode();
-  };
-
-  window.closeQrPayment = function() {
-    document.getElementById('qrPaymentModal').classList.add('hidden');
-  };
-
-  window.generateQrCode = function() {
-    const amount = document.getElementById('topupAmount').value;
-    // QR code generation will be handled by qr-payment.js
-    if (window.generateQR) {
-      window.generateQR(amount);
-    }
-  };
-
-  window.loadMoreTransactions = function() {
-    // Load more transactions will be handled by history.js
-    if (window.loadMore) {
-      window.loadMore();
-    }
-  };
-</script>
+<script src="js/history.js"></script>
+<script src="js/qr-payment.js"></script>
+<script src="js/wallet.js"></script>
 </body>
 </html>

@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shipway - Nạp tiền</title>
+  <title>Shipway - Ví điện tử</title>
   <link rel="stylesheet" href="css/wallet.css">
 </head>
 
-<body>
-<div class="page">
+<body data-page="wallet-topup">
+<div class="page wallet-topup-page">
 
   <!-- ===== HEADER ===== -->
   <div class="header">
@@ -16,173 +16,156 @@
       ←
     </a>
     <p class="desc">
-      Nạp tiền vào ví<br>
+      Nạp tiền và Rút tiền<br>
       QR ngân hàng hoặc Visa
     </p>
   </div>
 
-  <!-- ===== TOPUP CARD ===== -->
-  <div class="card">
-    <h2>Nạp tiền</h2>
+  <!-- ===== TAB CHỌN CHỨC NĂNG ===== -->
+  <div class="tab-container">
+    <button type="button" class="tab active" data-topup-tab="topup">Nạp tiền</button>
+    <button type="button" class="tab" data-topup-tab="withdraw">Rút tiền</button>
+  </div>
 
+  <!-- ===== NẠP TIỀN ===== -->
+  <div class="card" id="topupSection">
+    <h2>Nạp tiền vào ví</h2>
+    
     <!-- ===== METHOD SELECT ===== -->
-    <div class="payment-option">
-      <label>
-        <input type="radio" name="topupMethod" value="qr" checked
-               onchange="switchMethod('qr')">
-        QR Ngân hàng
-      </label>
-      <label>
-        <input type="radio" name="topupMethod" value="visa"
-               onchange="switchMethod('visa')">
-        Visa
-      </label>
-    </div>
-
-    <!-- ===== QR PAYMENT ===== -->
-    <div id="qrSection">
-      <div class="qr-container">
-        <img src="img/qr.jpg" alt="QR Code" class="qr-image">
-        <p class="qr-instruction">Quét mã QR để nạp tiền vào ví</p>
+    <div class="method-container">
+      <div class="method-tabs">
+        <button type="button" class="method-tab active" data-topup-method="qr">QR Ngân hàng</button>
+        <button type="button" class="method-tab" data-topup-method="visa">Visa</button>
       </div>
-    </div>
 
-    <!-- ===== VISA PAYMENT ===== -->
-    <div id="visaSection" class="hidden">
-      <div class="visa-form">
-        <label>Số thẻ</label>
-        <input type="text" placeholder="1234 5678 9012 3456">
-
-        <label>Tên chủ thẻ</label>
-        <input type="text" placeholder="NGUYEN VAN A">
-
-        <div class="visa-row">
-          <div>
-            <label>MM/YY</label>
-            <input type="text" placeholder="07/26">
+      <!-- ===== QR PAYMENT ===== -->
+      <div id="qrSection">
+        <div class="qr-container">
+          <div class="qr-code" id="qrCode">
+            <img src="img/qr.jpg" alt="QR Code" class="qr-image">
           </div>
-          <div>
-            <label>CVV</label>
-            <input type="password" placeholder="123">
+          <p class="qr-instruction">Quét mã QR để nạp tiền vào ví</p>
+
+          <div class="bank-info">
+
+            <div class="info-row">
+              <span class="info-label">Số tài khoản:</span>
+              <span class="info-value">9999999</span>
+              <button type="button" class="copy-btn" data-copy-value="9999999">Sao chép</button>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Ngân hàng:</span>
+              <span class="info-value">VietinBank</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Tên tài khoản:</span>
+              <span class="info-value">CÔNG TY SHIPWAY</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Nội dung CK:</span>
+              <span class="info-value" id="transferContent">ID123456_09012025</span>
+              <button type="button" class="copy-btn" data-copy-value="ID123456_09012025">Sao chép</button>
+            </div>
+          </div>
+
+          <div class="warning-note">
+            <strong>Lưu ý quan trọng:</strong> Vui lòng ghi đúng nội dung chuyển khoản để giao dịch được xử lý nhanh chóng. Nội dung: <strong>ID user + thời gian</strong> (ví dụ: ID123456_09012025)
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== VISA PAYMENT ===== -->
+      <div id="visaSection" class="hidden">
+        <div class="visa-form">
+          <label>Số thẻ</label>
+          <input type="text" placeholder="1234 5678 9012 3456" id="cardNumber">
+          
+          <label>Tên chủ thẻ</label>
+          <input type="text" placeholder="NGUYEN VAN A" id="cardName">
+          
+          <div class="visa-row">
+            <div>
+              <label>MM/YY</label>
+              <input type="text" placeholder="07/26" id="cardExpiry">
+            </div>
+            <div>
+              <label>CVV</label>
+              <input type="password" placeholder="123" id="cardCvv">
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- ===== AMOUNT ===== -->
-    <div class="amount-input">
-      <label>Số tiền nạp (₫)</label>
-      <input type="number" id="topupAmount" value="50000" min="10000" step="1000">
-    </div>
+    <!-- ===== AMOUNT ===== -->
+<div class="amount-input">
+  <label>Số tiền nạp (₫)</label>
+  <input type="number" id="topupAmount" value="50000" min="10000" step="1000">
+  
+  <div class="amount-presets">
+    <button type="button" class="amount-preset" data-amount-preset="50000">50,000₫</button>
+    <button type="button" class="amount-preset" data-amount-preset="100000">100,000₫</button>
+    <button type="button" class="amount-preset" data-amount-preset="200000">200,000₫</button>
+    <button type="button" class="amount-preset" data-amount-preset="500000">500,000₫</button>
+  </div>
+</div>
 
-    <button class="btn-primary" onclick="simulatePayment()">Xác nhận</button>
+<button type="button" class="btn-primary" data-action="confirm-topup" style="margin-top: 30px;">Xác nhận nạp tiền</button>
+  </div>
+
+  <!-- ===== RÚT TIỀN ===== -->
+  <div class="card hidden" id="withdrawSection">
+    <h2>Rút tiền về tài khoản</h2>
+    
+    <div class="bank-info">
+      <div class="info-row">
+        <span class="info-label">Số tài khoản:</span>
+        <span class="info-value" id="userAccount">Chưa cập nhật</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Ngân hàng:</span>
+        <span class="info-value" id="userBank">Chưa cập nhật</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Chủ tài khoản:</span>
+        <span class="info-value" id="userName">Chưa cập nhật</span>
+      </div>
+    </div>
+    
+    <div class="amount-input">
+      <label>Số tiền rút (₫)</label>
+      <input type="number" id="withdrawAmount" value="50000" min="50000" step="1000">
+      <div class="amount-presets">
+        <button type="button" class="amount-preset" data-withdraw-preset="50000">50,000₫</button>
+        <button type="button" class="amount-preset" data-withdraw-preset="100000">100,000₫</button>
+        <button type="button" class="amount-preset" data-withdraw-preset="200000">200,000₫</button>
+        <button type="button" class="amount-preset" data-withdraw-preset="500000">500,000₫</button>
+      </div>
+      <p class="available-balance">Số dư khả dụng: <span id="availableBalance">0₫</span></p>
+    </div>
+    
+    <button type="button" class="btn-secondary" data-action="confirm-withdraw">Xác nhận rút tiền</button>
   </div>
 
   <!-- ===== STATUS ===== -->
   <div class="card hidden" id="paymentStatus">
-    <p id="statusMessage">Đang xử lý thanh toán...</p>
+    <p id="statusMessage">Đang xử lý giao dịch...</p>
     <div class="loading-spinner"></div>
+  </div>
+
+  <!-- ===== SUCCESS ===== -->
+  <div class="card hidden" id="successStatus">
+    <div class="success-icon">✓</div>
+    <p id="successMessage">Giao dịch thành công!</p>
+    <button type="button" class="btn-primary" data-action="go-wallet">Quay về ví</button>
   </div>
 
 </div>
 
-<script>
-  let selectedMethod = 'qr';
-
-  function switchMethod(method) {
-    selectedMethod = method;
-    document.getElementById('qrSection').classList.toggle('hidden', method !== 'qr');
-    document.getElementById('visaSection').classList.toggle('hidden', method !== 'visa');
-  }
-window.transactionHistory.addTransaction({
-  title: 'Nạp tiền qua QR',
-  amount: topupAmount,
-  type: 'credit',
-  date: new Date()
-});
-
-  function getWalletBalance() {
-    return parseFloat(localStorage.getItem('walletBalance') || '0');
-  }
-
-  function simulatePayment() {
-    const amount = parseInt(document.getElementById('topupAmount').value);
-
-    if (!amount || amount < 10000) {
-      alert('Số tiền không hợp lệ');
-      return;
-    }
-
-    document.getElementById('paymentStatus').classList.remove('hidden');
-
-    setTimeout(() => {
-      const newBalance = getWalletBalance() + amount;
-      localStorage.setItem('walletBalance', newBalance);
-
-      const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-      transactions.unshift({
-        id: Date.now(),
-        type: 'topup',
-        amount,
-        description: selectedMethod === 'qr'
-          ? 'Nạp tiền qua QR ngân hàng'
-          : 'Nạp tiền qua Visa',
-        date: new Date().toISOString(),
-        status: 'success'
-      });
-      localStorage.setItem('transactions', JSON.stringify(transactions));
-
-      alert('Nạp tiền thành công');
-      window.location.href = 'index.html';
-    }, 5000);
-  }
-</script>
-
-<style>
-  .payment-option {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 15px;
-  }
-
-  .qr-container {
-    text-align: center;
-    margin: 15px 0;
-  }
-
-  .qr-image {
-    width: 200px;
-  }
-
-  .visa-form input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-
-  .visa-row {
-    display: flex;
-    gap: 10px;
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  .loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #eee;
-    border-top: 4px solid #ffc107;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 10px auto;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-</style>
+<script src="js/history.js"></script>
+<script src="js/qr-payment.js"></script>
+<script src="js/wallet.js"></script>
 
 </body>
 </html>

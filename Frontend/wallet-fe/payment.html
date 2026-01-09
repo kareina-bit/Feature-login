@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="css/wallet.css">
 </head>
 
-<body>
-<div class="page">
+<body data-page="wallet-payment">
+<div class="page wallet-payment-page">
 
   <!-- ===== HEADER ===== -->
   <div class="header">
@@ -48,7 +48,7 @@
   <div class="card">
     <h3>Phương thức thanh toán</h3>
     <div class="payment-methods">
-      <div class="payment-method active" onclick="selectPaymentMethod('wallet')">
+      <div class="payment-method" data-payment-method="wallet">
         <div class="method-icon">💰</div>
         <div class="method-info">
           <div class="method-name">Số dư ví</div>
@@ -56,8 +56,8 @@
         </div>
         <div class="method-radio"></div>
       </div>
-      
-      <div class="payment-method" onclick="selectPaymentMethod('visa')">
+
+      <div class="payment-method" data-payment-method="visa">
         <div class="method-icon">💳</div>
         <div class="method-info">
           <div class="method-name">Visa</div>
@@ -65,8 +65,8 @@
         </div>
         <div class="method-radio"></div>
       </div>
-      
-      <div class="payment-method" onclick="selectPaymentMethod('bankqr')">
+
+      <div class="payment-method" data-payment-method="bankqr">
         <div class="method-icon">📱</div>
         <div class="method-info">
           <div class="method-name">QR Ngân hàng</div>
@@ -79,7 +79,7 @@
 
   <!-- ===== PAYMENT BUTTON ===== -->
   <div class="card">
-    <button class="btn-primary" onclick="processPayment()">Thanh toán</button>
+    <button class="btn-primary" data-action="process-payment">Thanh toán</button>
   </div>
 
   <!-- ===== PAYMENT STATUS ===== -->
@@ -93,269 +93,9 @@
 
 </div>
 
-<!-- Scripts -->
-<script type="module">
-  let selectedPaymentMethod = 'wallet';
-  let orderAmount = 25000; // Default shipping fee
-
-  // Get current wallet balance from localStorage
-  function getWalletBalance() {
-    const balance = localStorage.getItem('walletBalance') || '0';
-    return parseFloat(balance);
-  }
-
-  // Update wallet balance
-  function updateWalletBalance(newBalance) {
-    localStorage.setItem('walletBalance', newBalance.toString());
-  }
-
-  // Get URL parameters
-  function getUrlParams() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const orderId = urlParams.get('orderId') || 'Order #1';
-    const amount = parseFloat(urlParams.get('amount')) || 25000;
-    
-    document.getElementById('orderId').textContent = orderId;
-    document.getElementById('shippingFee').textContent = amount.toLocaleString() + ' ₫';
-    document.getElementById('totalAmount').textContent = amount.toLocaleString() + ' ₫';
-    
-    orderAmount = amount;
-  }
-
-  // Select payment method
-  window.selectPaymentMethod = function(method) {
-    // Remove active class from all methods
-    document.querySelectorAll('.payment-method').forEach(el => {
-      el.classList.remove('active');
-    });
-    
-    // Add active class to selected method
-    event.currentTarget.classList.add('active');
-    
-    selectedPaymentMethod = method;
-  };
-  document.addEventListener('DOMContentLoaded', () => {
-    const order = JSON.parse(localStorage.getItem('currentOrder'));
-
-    if (!order) {
-      alert('Không tìm thấy đơn hàng');
-      window.location.href = 'index.html';
-      return;
-    }
-
-    document.getElementById('orderId').innerText = order.orderId;
-    document.getElementById('orderAmount').innerText =
-      order.amount.toLocaleString('vi-VN') + ' ₫';
-  });
-  // Process payment
-  window.processPayment = function() {
-    const currentBalance = getWalletBalance();
-    
-    // Check wallet balance for wallet payment
-    if (selectedPaymentMethod === 'wallet') {
-      if (currentBalance < orderAmount) {
-        alert('Số dư tài khoản không đủ, vui lòng nạp thêm tiền');
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 1000);
-        return;
-      }
-    }
- window.transactionHistory.addTransaction({
-  title: `Thanh toán đơn hàng ${order.orderId}`,
-  amount: orderAmount,
-  type: 'debit',
-  date: new Date()
-});
-
-    // Show payment status
-    document.getElementById('paymentStatus').classList.remove('hidden');
-    document.getElementById('statusMessage').textContent = 'Đang xử lý thanh toán...';
-    
-    // Simulate 5-second payment processing
-    setTimeout(() => {
-      let successMessage = '';
-      
-      if (selectedPaymentMethod === 'wallet') {
-        // Deduct amount from wallet
-        const newBalance = currentBalance - orderAmount;
-        updateWalletBalance(newBalance);
-        successMessage = `Thanh toán thành công! ${orderAmount.toLocaleString()} ₫ đã được trừ từ ví.`;
-      } else if (selectedPaymentMethod === 'visa') {
-        successMessage = `Thanh toán thành công qua Visa! ${orderAmount.toLocaleString()} ₫`;
-      } else if (selectedPaymentMethod === 'bankqr') {
-        successMessage = `Thanh toán thành công qua QR Ngân hàng! ${orderAmount.toLocaleString()} ₫`;
-      }
-      
-      // Add transaction record
-      const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-      transactions.unshift({
-        id: Date.now(),
-        type: 'payment',
-        amount: -orderAmount,
-        description: `Thanh toán ${document.getElementById('orderId').textContent}`,
-        date: new Date().toISOString(),
-        status: 'success',
-        method: selectedPaymentMethod
-      });
-      localStorage.setItem('transactions', JSON.stringify(transactions));
-      
-      // Show success message
-      document.getElementById('loadingSpinner').style.display = 'none';
-      document.getElementById('statusMessage').textContent = successMessage;
-      
-      // Redirect to order tracking or order detail page after 2 seconds
-      setTimeout(() => {
-        // For now, redirect back to wallet overview
-        // In real app, this would redirect to order tracking
-        window.location.href = 'index.html';
-      }, 2000);
-      
-    }, 5000); // 5 seconds simulation
-  };
-
-  // Initialize page
-  document.addEventListener('DOMContentLoaded', () => {
-    getUrlParams();
-    
-    // Update wallet balance display
-    const balance = getWalletBalance();
-    document.getElementById('walletBalanceDisplay').textContent = balance.toLocaleString() + ' ₫';
-  });
-</script>
-
-<style>
-  .order-info {
-    margin: 20px 0;
-  }
-
-  .info-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #f0f0f0;
-  }
-
-  .info-row:last-child {
-    border-bottom: none;
-  }
-
-  .info-row.total {
-    border-top: 2px solid #ddd;
-    margin-top: 10px;
-    padding-top: 15px;
-    font-weight: bold;
-    font-size: 18px;
-  }
-
-  .label {
-    color: #666;
-    font-weight: 500;
-  }
-
-  .value {
-    font-weight: 600;
-    color: #333;
-  }
-
-  .loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #ffc107;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 20px auto;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  .status-content {
-    text-align: center;
-    padding: 20px 0;
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  .payment-methods {
-    margin: 20px 0;
-  }
-
-  .payment-method {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border: 2px solid #f0f0f0;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .payment-method:hover {
-    border-color: #e0e0e0;
-  }
-
-  .payment-method.active {
-    border-color: #ffc107;
-    background-color: #fff9e6;
-  }
-
-  .method-icon {
-    font-size: 24px;
-    margin-right: 15px;
-  }
-
-  .method-info {
-    flex: 1;
-  }
-
-  .method-name {
-    font-weight: 600;
-    margin-bottom: 2px;
-  }
-
-  .method-desc {
-    font-size: 12px;
-    color: #666;
-  }
-
-  .method-balance {
-    font-size: 14px;
-    color: #28a745;
-    font-weight: 600;
-  }
-
-  .method-radio {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #ddd;
-    border-radius: 50%;
-    position: relative;
-  }
-
-  .payment-method.active .method-radio {
-    border-color: #ffc107;
-  }
-
-  .payment-method.active .method-radio::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 10px;
-    height: 10px;
-    background-color: #ffc107;
-    border-radius: 50%;
-  }
-</style>
+<script src="js/history.js"></script>
+<script src="js/qr-payment.js"></script>
+<script src="js/wallet.js"></script>
 
 </body>
 </html>
