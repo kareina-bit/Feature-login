@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipway - Nạp tiền</title>
+  <link rel="stylesheet" href="css/wallet.css">
+</head>
+
+<body>
+<div class="page">
+
+  <!-- ===== HEADER ===== -->
+  <div class="header">
+    <a href="index.html" class="back-home-btn" title="Quay về ví">
+      ←
+    </a>
+    <p class="desc">
+      Nạp tiền vào ví<br>
+      QR ngân hàng hoặc Visa
+    </p>
+  </div>
+
+  <!-- ===== TOPUP CARD ===== -->
+  <div class="card">
+    <h2>Nạp tiền</h2>
+
+    <!-- ===== METHOD SELECT ===== -->
+    <div class="payment-option">
+      <label>
+        <input type="radio" name="topupMethod" value="qr" checked
+               onchange="switchMethod('qr')">
+        QR Ngân hàng
+      </label>
+      <label>
+        <input type="radio" name="topupMethod" value="visa"
+               onchange="switchMethod('visa')">
+        Visa
+      </label>
+    </div>
+
+    <!-- ===== QR PAYMENT ===== -->
+    <div id="qrSection">
+      <div class="qr-container">
+        <img src="img/qr.jpg" alt="QR Code" class="qr-image">
+        <p class="qr-instruction">Quét mã QR để nạp tiền vào ví</p>
+      </div>
+    </div>
+
+    <!-- ===== VISA PAYMENT ===== -->
+    <div id="visaSection" class="hidden">
+      <div class="visa-form">
+        <label>Số thẻ</label>
+        <input type="text" placeholder="1234 5678 9012 3456">
+
+        <label>Tên chủ thẻ</label>
+        <input type="text" placeholder="NGUYEN VAN A">
+
+        <div class="visa-row">
+          <div>
+            <label>MM/YY</label>
+            <input type="text" placeholder="07/26">
+          </div>
+          <div>
+            <label>CVV</label>
+            <input type="password" placeholder="123">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== AMOUNT ===== -->
+    <div class="amount-input">
+      <label>Số tiền nạp (₫)</label>
+      <input type="number" id="topupAmount" value="50000" min="10000" step="1000">
+    </div>
+
+    <button class="btn-primary" onclick="simulatePayment()">Xác nhận</button>
+  </div>
+
+  <!-- ===== STATUS ===== -->
+  <div class="card hidden" id="paymentStatus">
+    <p id="statusMessage">Đang xử lý thanh toán...</p>
+    <div class="loading-spinner"></div>
+  </div>
+
+</div>
+
+<script>
+  let selectedMethod = 'qr';
+
+  function switchMethod(method) {
+    selectedMethod = method;
+    document.getElementById('qrSection').classList.toggle('hidden', method !== 'qr');
+    document.getElementById('visaSection').classList.toggle('hidden', method !== 'visa');
+  }
+window.transactionHistory.addTransaction({
+  title: 'Nạp tiền qua QR',
+  amount: topupAmount,
+  type: 'credit',
+  date: new Date()
+});
+
+  function getWalletBalance() {
+    return parseFloat(localStorage.getItem('walletBalance') || '0');
+  }
+
+  function simulatePayment() {
+    const amount = parseInt(document.getElementById('topupAmount').value);
+
+    if (!amount || amount < 10000) {
+      alert('Số tiền không hợp lệ');
+      return;
+    }
+
+    document.getElementById('paymentStatus').classList.remove('hidden');
+
+    setTimeout(() => {
+      const newBalance = getWalletBalance() + amount;
+      localStorage.setItem('walletBalance', newBalance);
+
+      const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+      transactions.unshift({
+        id: Date.now(),
+        type: 'topup',
+        amount,
+        description: selectedMethod === 'qr'
+          ? 'Nạp tiền qua QR ngân hàng'
+          : 'Nạp tiền qua Visa',
+        date: new Date().toISOString(),
+        status: 'success'
+      });
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+
+      alert('Nạp tiền thành công');
+      window.location.href = 'index.html';
+    }, 5000);
+  }
+</script>
+
+<style>
+  .payment-option {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+  }
+
+  .qr-container {
+    text-align: center;
+    margin: 15px 0;
+  }
+
+  .qr-image {
+    width: 200px;
+  }
+
+  .visa-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .visa-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #eee;
+    border-top: 4px solid #ffc107;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 10px auto;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+
+</body>
+</html>

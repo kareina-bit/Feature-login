@@ -32,29 +32,43 @@
       <div class="balance-amount" id="walletBalance">0.000 ₫</div>
       <div class="balance-label">Số dư khả dụng</div>
     </div>
-    <button class="btn-primary" onclick="showQrPayment()">Nạp tiền qua QR</button>
+    <button class="btn-primary" onclick="goToTopup()">
+  Nạp tiền vào tài khoản
+</button>
   </div>
 
-  <!-- ===== QUICK ACTIONS ===== -->
+  <!-- ===== PAYMENT METHODS ===== -->
   <div class="card">
-    <h3>Thao tác nhanh</h3>
-    <div class="action-buttons">
-      <button class="btn-secondary" onclick="showTransactionHistory()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-        </svg>
-        Lịch sử giao dịch
-      </button>
-      <button class="btn-secondary" onclick="showQrPayment()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-          <rect x="7" y="7" width="3" height="3"></rect>
-          <rect x="14" y="7" width="3" height="3"></rect>
-          <rect x="7" y="14" width="3" height="3"></rect>
-          <rect x="14" y="14" width="3" height="3"></rect>
-        </svg>
-        Nạp tiền
-      </button>
+    <h3>Đơn hàng cần thanh toán</h3>
+    <div class="table-responsive">
+      <table class="order-table">
+        <thead>
+          <tr>
+            <th>ID Đơn</th>
+            <th>Địa điểm</th>
+            <th>Giá tiền</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="unpaidOrderList">
+          <tr>
+            <td>#SW1024</td>
+            <td>Quận 1, TP.HCM</td>
+            <td><strong>50.000 ₫</strong></td>
+            <td>
+              <button class="btn-pay-small" onclick="payOrder('SW1024')">Thanh toán</button>
+            </td>
+          </tr>
+          <tr>
+            <td>#SW1025</td>
+            <td>Quận 7, TP.HCM</td>
+            <td><strong>120.000 ₫</strong></td>
+            <td>
+              <button class="btn-pay-small" onclick="payOrder('SW1025')">Thanh toán</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -67,28 +81,6 @@
     <button class="btn-outline" onclick="loadMoreTransactions()">Xem thêm</button>
   </div>
 
-  <!-- ===== QR PAYMENT MODAL ===== -->
-  <div id="qrPaymentModal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Nạp tiền qua mã QR</h3>
-        <button class="modal-close" onclick="closeQrPayment()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="qr-container">
-          <div id="qrCode" class="qr-code">
-            <!-- QR code will be generated here -->
-          </div>
-          <p class="qr-instruction">Quét mã QR để nạp tiền</p>
-        </div>
-        <div class="amount-input">
-          <label for="topupAmount">Số tiền nạp (₫):</label>
-          <input type="number" id="topupAmount" placeholder="Nhập số tiền" min="10000" step="1000" value="50000">
-        </div>
-        <button class="btn-primary" onclick="generateQrCode()">Tạo mã QR</button>
-      </div>
-    </div>
-  </div>
 
 </div>
 
@@ -104,10 +96,73 @@
     loadTransactionHistory();
     initQrPayment();
   });
+let selectedTopupMethod = 'qr';
+
+window.switchTopupMethod = function(method) {
+  selectedTopupMethod = method;
+
+  document.getElementById('qrSection').classList.toggle('hidden', method !== 'qr');
+  document.getElementById('visaSection').classList.toggle('hidden', method !== 'visa');
+};
+function goToTopup() {
+    window.location.href = 'topup.html';
+  }
+window.confirmTopup = function() {
+  const amount = parseInt(document.getElementById('topupAmount').value);
+
+  if (!amount || amount < 10000) {
+    alert('Số tiền nạp không hợp lệ');
+    return;
+  }
+
+  document.querySelector('.modal-body').innerHTML = `
+    <p style="text-align:center">Đang xử lý thanh toán...</p>
+  `;
+
+  setTimeout(() => {
+    const currentBalance = parseFloat(localStorage.getItem('walletBalance') || '0');
+    localStorage.setItem('walletBalance', currentBalance + amount);
+
+    alert(
+      selectedTopupMethod === 'qr'
+        ? 'Nạp tiền thành công qua QR'
+        : 'Nạp tiền thành công qua Visa'
+    );
+
+    closeQrPayment();
+    window.location.reload();
+  }, 5000);
+};
 
   // Global functions for onclick handlers
   window.showTransactionHistory = function() {
     document.getElementById('transactionHistoryCard').scrollIntoView({ behavior: 'smooth' });
+  };
+ window.payOrder = function(orderId, amount) {
+    // Lưu thông tin đơn hàng để trang payment dùng
+    localStorage.setItem('currentOrder', JSON.stringify({
+      orderId,
+      amount
+    }));
+
+    // Điều hướng sang trang thanh toán
+    window.location.href = 'payment.html';
+  };
+  window.selectPaymentMethod = function(method) {
+    // Remove active class from all methods
+    document.querySelectorAll('.payment-method').forEach(el => {
+      el.classList.remove('active');
+    });
+    
+    // Add active class to selected method
+    event.currentTarget.classList.add('active');
+    
+    // Store selected method
+    localStorage.setItem('selectedPaymentMethod', method);
+  };
+
+  window.goToTopup = function() {
+    window.location.href = 'topup.html';
   };
 
   window.showQrPayment = function() {

@@ -11,11 +11,12 @@ export function initWallet() {
   setInterval(loadWalletBalance, 30000); // Refresh every 30 seconds
 }
 
-// Load wallet balance from backend
+// Load wallet balance from localStorage
 async function loadWalletBalance() {
   try {
-    // For MVP, use mock data. In production, this would call the backend API
-    const balance = await getMockBalance();
+    // Get balance from localStorage, default to 0 if not set
+    const storedBalance = localStorage.getItem('walletBalance') || '0';
+    const balance = parseFloat(storedBalance);
     updateBalanceDisplay(balance);
   } catch (error) {
     console.error('Error loading wallet balance:', error);
@@ -38,10 +39,10 @@ function getMockBalance() {
 // Update balance display
 function updateBalanceDisplay(balance) {
   currentBalance = balance;
-  const balanceElement = document.getElementById('walletBalance');
   
+  // Update main balance display
+  const balanceElement = document.getElementById('walletBalance');
   if (balanceElement) {
-    // Format as Vietnamese currency
     const formattedBalance = formatCurrency(balance);
     balanceElement.textContent = formattedBalance;
     
@@ -51,6 +52,16 @@ function updateBalanceDisplay(balance) {
       balanceElement.style.transform = 'scale(1)';
     }, 200);
   }
+  
+  // Update payment method balance display
+  const balanceDisplayElement = document.getElementById('walletBalanceDisplay');
+  if (balanceDisplayElement) {
+    const formattedBalance = formatCurrency(balance);
+    balanceDisplayElement.textContent = formattedBalance;
+  }
+  
+  // Save to localStorage
+  localStorage.setItem('walletBalance', balance.toString());
 }
 
 // Format currency to Vietnamese Dong
@@ -99,6 +110,16 @@ export function addBalance(amount) {
   showSuccessNotification(`Nạp tiền thành công: ${formatCurrency(amount)}`);
 }
 
+// Deduct balance after successful payment
+export function deductBalance(amount) {
+  if (currentBalance >= amount) {
+    currentBalance -= amount;
+    updateBalanceDisplay(currentBalance);
+    return true;
+  }
+  return false;
+}
+
 // Show success notification
 function showSuccessNotification(message) {
   // Create a simple notification
@@ -132,5 +153,6 @@ window.walletUtils = {
   getCurrentBalance,
   refreshBalance,
   addBalance,
+  deductBalance,
   formatCurrency
 };
