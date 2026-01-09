@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đánh giá tài xế giao hàng</title>
+    <link rel="stylesheet" href="rating.css">
+</head>
+<body>
+    <div class="rating-container">
+        <div class="rating-card">
+            <h1 class="rating-title">Đánh giá tài xế giao hàng</h1>
+            
+            <div class="rating-section">
+                <p class="rating-label">Bạn thấy dịch vụ như thế nào?</p>
+                
+                <div class="stars-container">
+                    <div class="star" data-rating="1">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 2L24.89 15.26H38.57L27.34 23.44L32.23 36.7L21 28.52L9.77 36.7L14.66 23.44L3.43 15.26H17.11L20 2Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="star" data-rating="2">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 2L24.89 15.26H38.57L27.34 23.44L32.23 36.7L21 28.52L9.77 36.7L14.66 23.44L3.43 15.26H17.11L20 2Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="star" data-rating="3">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 2L24.89 15.26H38.57L27.34 23.44L32.23 36.7L21 28.52L9.77 36.7L14.66 23.44L3.43 15.26H17.11L20 2Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="star" data-rating="4">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 2L24.89 15.26H38.57L27.34 23.44L32.23 36.7L21 28.52L9.77 36.7L14.66 23.44L3.43 15.26H17.11L20 2Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="star" data-rating="5">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 2L24.89 15.26H38.57L27.34 23.44L32.23 36.7L21 28.52L9.77 36.7L14.66 23.44L3.43 15.26H17.11L20 2Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <p class="rating-text" id="ratingText">Chọn để đánh giá</p>
+            </div>
+
+            <div class="comment-section">
+                <label for="comment" class="comment-label">Bình luận (tùy chọn)</label>
+                <textarea 
+                    id="comment" 
+                    class="comment-textarea" 
+                    placeholder="Hãy chia sẻ trải nghiệm của bạn với tài xế giao hàng"
+                    rows="5"
+                ></textarea>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <button class="submit-btn" id="submitBtn">Gửi đánh giá</button>
+        </div>
+    </div>
+
+    <script src="rating.controller.js"></script>
+    <script src="rating.js"></script>
+</body>
+</html>
